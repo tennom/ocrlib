@@ -1,0 +1,270 @@
+// ----- constructor and destructor
+
+
+GBitsetContour::~GBitsetContour()
+{
+ if ( data_size !=0 ) {
+#ifdef WIN32 
+  farfree(bits_data);
+#else
+  free(bits_data);	 
+#endif	 
+	 drawData->destroy();
+  line->destroy();
+   data_size=0;
+ }
+}
+
+void
+GBitsetContour::destroy(void)
+{
+ if ( data_size !=0 ){
+#ifdef WIN32 
+	 farfree(bits_data);
+#else
+	 free(bits_data);	 
+#endif	 
+ drawData->destroy();
+ line->destroy();
+ data_size=0;
+ }
+
+}
+
+GBitsetContour::GBitsetContour()
+  : nrows(0), ncolumns(0), border(0),
+	bits_per_row(0),data_size(0)
+{
+}
+
+GBitsetContour::GBitsetContour(int nrows, int ncolumns, int border)
+  : nrows(0), ncolumns(0), border(0),
+	bits_per_row(0),data_size(0)
+{
+  try
+  {
+	init(nrows, ncolumns, border);
+  }
+  catch(int a)
+  {
+	destroy();
+  }
+}
+
+
+GBitsetContour::GBitsetContour(const GBitsetContour *ref)
+  : nrows(0), ncolumns(0), border(0),
+	bits_per_row(0),data_size(0)
+{
+  try
+  {
+	init(ref, ref->border);
+  }
+  catch(int a)
+  {
+	destroy();
+  }
+}
+
+GBitsetContour::GBitsetContour(const GBitmap *ref, short stepW, short stepH, short flipV)
+  : nrows(0), ncolumns(0), border(0),
+	bits_per_row(0),data_size(0)
+{
+  try
+  {
+	init(ref, stepW, stepH, flipV);
+  }
+  catch(int a)
+  {
+	destroy();
+  }
+
+}
+
+GBitsetContour::GBitsetContour(const GBitmap *ref, const GBitmap *ref1)
+  : nrows(0), ncolumns(0), border(0),
+	bits_per_row(0),data_size(0)
+{
+  try
+  {
+	initLevel(ref);
+  }
+  catch(int a)
+  {
+	destroy();
+  }
+}
+
+
+GBitsetContour::GBitsetContour(const GBitsetContour *ref, int border)
+  : nrows(0), ncolumns(0), border(0),
+	bits_per_row(0),data_size(0)
+{
+  try
+  {
+	init(ref, border);
+  }
+  catch(int a)
+  {
+	destroy();
+  }
+}
+
+// ----- initialization
+
+void
+GBitsetContour::init(int arows, int acolumns, int aborder)
+{
+  c_out.open("c:/consoleBitContour.txt");
+  destroy();
+  nrows = arows;
+  ncolumns = acolumns;
+  border = aborder;
+  bits_per_row = ncolumns + border*2;
+  int nbits = (nrows * bits_per_row);
+  if (nbits > 0)
+	{
+#ifdef WIN32 
+		bits_data=(bool*)farmalloc(nbits);
+#else
+		bits_data=(bool*)malloc(nbits);
+#endif	 
+		
+	}
+  data_size=1;
+}
+
+
+void
+GBitsetContour::init(const GBitsetContour *ref, int aborder)
+{
+  if (this != ref)
+	{
+	  init(ref->nrows, ref->ncolumns, aborder);
+	  bool *row = bits_data+border;
+	  bool *rowDest;
+	  for (int n=0; n<nrows; n++, row+=bits_per_row){
+		rowDest=bits_data+bits_per_row*n+border*2*n+border;
+	    memcpy( (void*)row, (void*)rowDest,  ncolumns/8 );
+	  }
+	}
+  else if (aborder > border)
+	{
+	  //minborder(aborder);
+	}
+  data_size=1;
+}
+
+// Fills a bitmap with the given value
+void
+GBitsetContour::fill(bool value)
+{
+  for(unsigned int y=0; y<rows(); y++)
+	{
+	  bool* bm_y = (*this)[y];
+	  for(unsigned int x=0; x<columns(); x++)
+		bm_y[x] = value;
+	}
+}
+
+
+GBitsetContour*
+GBitsetContour::rotate(int count)
+{
+  GBitsetContour* newbitmap=this;
+ /* count = count & 3;
+  if(count)
+  {
+	if( count & 0x01 )
+	{
+	  newbitmap = new GBitsetContour(ncolumns, nrows);
+	}else
+	{
+	  newbitmap = new GBitsetContour(nrows, ncolumns);
+	}
+	GBitsetContour &dbitmap = *newbitmap;
+	switch(count)
+	{
+	case 3: // rotate 90 counter clockwise
+	  {
+		const int lastrow = dbitmap.rows()-1;
+		for(int y=0; y<nrows; y++)
+		{
+		  const bool *r=operator[] (y);
+		  for(int x=0,xnew=lastrow;xnew>=0; x++,xnew--)
+		  {
+			dbitmap[xnew][y] = r[x];
+		  }
+		}
+	  }
+	  break;
+	case 2: // rotate 180 counter clockwise
+	  {
+		const int lastrow = dbitmap.rows()-1;
+		const int lastcolumn = dbitmap.columns()-1;
+		for(int y=0,ynew=lastrow;ynew>=0; y++,ynew--)
+		{
+		  const bool *r=operator[] (y);
+		  bool *d=dbitmap[ynew];
+		  for(int xnew=lastcolumn;xnew>=0; r++,--xnew)
+		  {
+			d[xnew] = *r;
+		  }
+		}
+	  }
+	  break;
+	case 1: // rotate 270 counter clockwise
+	  {
+		const int lastcolumn = dbitmap.columns()-1;
+		for(int y=0,ynew=lastcolumn;ynew>=0;y++,ynew--)
+		{
+		  const bool *r=operator[] (y);
+		  for(int x=0; x<ncolumns; x++)
+		  {
+			dbitmap[x][ynew] = r[x];
+		  }
+		}
+	  }
+	  break;
+	}
+  }
+  */
+  return newbitmap;
+}
+
+void GBitsetContour::set_sqrt_array(){
+	
+	for(int i=0;i<16000;i++){
+		sqrt_buff[i]=(int)sqrt((float)i);
+	}
+}//______________________________
+
+inline int GBitsetContour::sqrtA(int data){
+	if(data<16000){return sqrt_buff[data];}else{return (int)sqrt((float)data);}
+	
+}//___________________________
+
+
+
+#ifndef NDEBUG
+void
+GBitsetContour::check_border() const
+{int col ;
+  if (bits_data)
+	{
+	  const bool *p = (*this)[-1];
+	  for (col=-border; col<ncolumns+border; col++)
+		if (p[col])exit(0);
+	  for (int row=0; row<nrows; row++)
+		{
+		  p = (*this)[row];
+		  for (col=-border; col<0; col++)
+			if (p[col])exit(0);
+		  for (col=ncolumns; col<ncolumns+border; col++)
+			if (p[col])exit(0);
+		}
+	}
+}
+
+#endif
+

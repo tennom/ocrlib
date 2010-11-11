@@ -1,0 +1,85 @@
+﻿#include "config.h"
+
+#include "OCRTypes.h"
+#include "glyphOCR.h"
+#include <string.h>
+#include <fstream>
+#include "php2stl.h"
+
+// ----- constructor and destructor
+//________gluphOCR_________________
+glyphOCR::~glyphOCR(){}
+
+void glyphOCR::destroy(void){}
+
+glyphOCR::glyphOCR(){
+		mask32Count=0;
+		mask128Count=0;
+		vectorCount=0;
+}
+
+int operator==(const glyphOCR &left, const glyphOCR &right){
+	return  left.correlation==right.correlation;
+}
+
+int operator<(const glyphOCR &left, const glyphOCR &right){
+	return  left.correlation>right.correlation;
+}
+
+void glyphOCR::eraseMask(int id){
+if(id>=mask32Count)return;  //ÌÛÊÌÓ ÒÚÂÂÚ¸ ÌÓ‚Û˛ Ï‡ÒÍÛ, ÏÓÊÌÓ ÌË˜Â„Ó ÌÂ ‰ÂÎ‡Ú¸
+if(id<0)return;             //Ï‡ÎÓ ÎË ˜ÚÓ:)
+
+mask32[id]=mask32[mask32Count-1];
+mask32Count--;
+
+}//_____________________________________________________________________________
+
+
+void glyphOCR::copy(glyphOCR* letter){
+letterIndex=letter->letterIndex;
+stringNum=letter->stringNum;
+recordFlag=letter->recordFlag;
+recordStatus=letter->recordStatus;
+lengthSum=letter->lengthSum;
+angLength=letter->angLength;
+
+for(int i=0;i<8;i++){mask32[i]=letter->mask32[i];}
+for(int i=0;i<4;i++){mask128[i]=letter->mask128[i];}
+
+mask32Count=letter->mask32Count;
+mask128Count=letter->mask128Count;
+vectorCount=letter->vectorCount;
+center=letter->center;
+name=letter-> name;
+Wylie=letter-> Wylie;
+OCRKey=letter-> OCRKey;
+OCRIndex=letter->OCRIndex;
+correlation =letter->correlation;
+Character=letter->Character;
+vectorLimit=letter->vectorLimit;
+stackFlag=letter->stackFlag;
+OCRStatus=letter->OCRStatus;
+letterW=letter->letterW;
+letterH=letter->letterH;
+baseLetter=letter->baseLetter;
+xMin=letter->xMin;
+xMax=letter->xMax;
+yMax=letter->yMax;
+yMin=letter->yMin;
+xSum=letter->xSum;
+ySum=letter->ySum;
+y0=letter->y0;
+y1=letter->y1;
+newLetter=letter->newLetter;
+newLetterInBook=letter->newLetterInBook;
+allLetterCount=letter->allLetterCount;
+}//_____________________________________________________________________________
+
+void glyphOCR::calibrateMask(GBitmap *img){
+
+  int a=0;
+
+
+
+}

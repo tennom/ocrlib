@@ -1,0 +1,376 @@
+
+#ifndef _GBitsetContour_H_
+#define _GBitsetContour_H_
+#include "config.h"
+
+#include "GBitmap.h"
+#include "OCRTypes.h"
+#include "glyphOCR.h"
+
+#ifdef PC
+  #define DRAW1  /// аналоговое рисование
+#endif
+
+#include <vector>
+#ifdef MAC
+// #include <bvector.h>
+#endif
+#include <string>
+#include <algorithm>
+#include <fstream>
+#include <math.h>
+
+
+using namespace std;
+
+
+namespace ocr {
+	
+/** \brief Класс распознавания контуров и их векторизации. 
+Распознавание контуров использует "chain" алгоритм. 
+Векторизация осуществляется сглаживанием контура импульсными фильтрами и выделением точек смены направления. 
+Результирующие вектора также фильтруются по длинне и величине угла*/
+class GBitsetContour{
+protected:
+  GBitsetContour(void);
+  GBitsetContour(int ncolumns, int nrows);
+  GBitsetContour(const GBitsetContour *ref);
+  GBitsetContour(const GBitmap *ref, const GBitmap *ref1);
+  GBitsetContour(const GBitmap *ref, short stepW=1, short stepH=1,short flipV=0);
+public:
+  virtual ~GBitsetContour();
+  void destroy(void);
+  /** @name Construction. */
+  //@{
+  /** \brief Constructs an empty GBitsetContour object.  The returned GBitsetContour has zero rows
+	  and zero columns.  Use function \Ref{init} to change the size of the
+	  image. */
+  static GBitsetContour* create(void) {return new GBitsetContour;}
+
+  /** \brief Constructs a GBitsetContour with #nrows# rows and #ncolumns# columns.  All
+	  pixels are initialized to white. The number of gray levels is initially set to #2#.  */
+  static GBitsetContour* create(const int nrows, const int ncolumns)
+  {return new GBitsetContour(ncolumns,nrows);}
+
+  /** \brief Copy constructor. Constructs a GBitsetContour by replicating the size and the contents of GBitsetContour #ref#. */
+  static GBitsetContour* create(const GBitsetContour *ref)
+  {return new GBitsetContour(ref);}
+
+  /** Copy constructor. Constructs a GBitsetContour by replicating the size and the contents of every step pixel of GBitmap #ref#. stepH, stepW is step for reduce image size   */
+  static GBitsetContour* createResize(const GBitmap *ref, short stepW, short stepH, short flipV)
+  {return new GBitsetContour(ref,stepW,stepH,flipV);}
+
+  /** \brief Resets this GBitsetContour size to #nrows# rows and #ncolumns# columns and sets all pixels to white. The  number of gray levels is initialized to #2#. */
+  void init(int nrows, int ncolumns);
+  /** \brief Initializes this GBitsetContour with the contents of the GBitsetContour #ref#. */
+  void init(const GBitsetContour *ref);
+  /** \brief Initializes this GBitsetContour with the contents every step pixel of the GBitsetContour #ref#. stepH, stepW is step for reduce image size */
+  void init(const GBitmap *ref, short stepW=1, short stepH=1, short flipV=0);
+
+
+  void fill(bool value);
+
+  /** @name Accessing the pixels. */
+  //@{
+  /** \brief Returns the number of rows (the image height). */
+  unsigned int rows() const;
+  /** \brief Returns the number of columns (the image width). */
+  unsigned int columns() const;
+  /** \brief Returns a constant pointer to the first byte of row #row#.This pointer can be used as an array to read the columns elements in row. */
+  const unsigned char *operator[] (int row) const;
+  /** Returns a pointer to the first byte of row #row#. This pointer can be used as an array to read or write the row elements. */
+  unsigned char *operator[] (int row);
+  /** Returns the size of a row in memory (in pixels).*/
+  unsigned int rowsize() const;
+
+  GBitsetContour* rotate(int count=0);  ///(deprecated)
+  //@}
+
+
+protected:
+  // bitmap components
+  unsigned short nrows;             ///<высота битмэпа
+  unsigned short ncolumns;          ///<ширина битмэпа
+  unsigned short bytes_per_row;     ///<количество байтов в строке 
+  short stepBit;
+  short srcW;
+  short srcH;
+public:
+  unsigned char  *bytes_data;      ///<основной байтовый буфер данных битмэпа
+  int data_size;                   ///<размер основного байтового буфера данных битмэпа
+  int textLineSize;	               ///<установочный размер строки текста. Используется для определения параметров векторизации. text line size for set the parameters of vectorisation	
+  ofstream c_out;                  ///<отладочный вывод в файл
+#ifdef DEBUGLVL
+  GBitmap* destData;               ///<отладочный графический массив
+  #ifdef MACOS
+  drawDataRecord drawGraph;        ///<отладочный графический массив
+  #endif
+#endif
+private:
+
+
+public:
+//float Alpha;
+  short deltaX;
+  short lineCount;                ///<количество строк в тексте
+#ifdef DEBUGLVL	
+  GBitmap* drawData;              ///<отладочный графический массив
+#endif	
+  GBitmap* line;                  ///<GBitmap в который записывается вся промежуточная информация в процессе выделения контуров. (Контур, заливка, концы контуров)
+  short baseDirection;            ///<направление контура (по и против часовой стрелки) 
+  vector<stringOCR>*strArray;     ///<массив информации о координатах строк и букв. Используется для передачи результатов распознавания между классами
+  unsigned int vectorCount;       ///<общее количество векторов в тексте
+// --- Algorithm --- GBitsetContour_algorithm.h ---
+
+  /// ФИЛЬТР НИЗКИХ ЧАСТОТ  (Gaussian)
+  void filterHigh(vector<int> &In,int KHig);
+  //ПОЛОСОВОЙ ПРОСТРАНСТВЕННЫЙ ФИЛЬТР
+  void filterLaplasian(vector<int> &In, int KHig, int KLow);
+
+  //#ifdef DEBUGLVL
+  /// ВИЗУАЛИЗАЦИЯ АНАЛОГОВАЯ
+  void drawNFase(vector<vector<int> > &INFase, int color);
+  //#endif
+
+  /// Преобразование ГИЛБЕРТА с параметром (ширина) PGilb
+  void filterGilbert(vector<int> &HBuf,
+                     vector<int> &GBuf,
+                     int MGilb,
+                     int PGilb );
+  /// Визуализация аналоговая вертикальных графиков L
+  void LDraw(vector<int> &HStr, int sm, int color);
+  /// Визуализация аналоговая вертикальных графиков H переменной длинны
+  void LDrawVar(vector<int> &HStr, int HDrawSize, int sm, int scope, int color);
+  /// Визуализация аналоговая горизональных графиков W
+  void WDraw(vector<int> &LStr, int sm, int color);
+  /// Визуализация аналоговая горизональных графиков W переменной длинны
+  void WDrawVar(vector<int> &LStr, int WDrawSize, int sm, int scope, int color);
+  /// Визуализация аналоговая  прямоугольников в структурах
+  void stringDraw(int color);
+  /// Визуализация аналоговая  прямоугольников в структурах для букв
+  void wordDraw(int color);
+  /// Визуализация аналоговая  прямоугольников в структурах для точек
+  void pointDraw(int color);
+  /// Рисование вертикальных линий
+  void LineVertical(int sm, int color);
+  /// Визуализация аналоговая результатов векторизации контуров
+  void vDraw();
+  /// Sorting  сортировка
+  void Sort(vector<int> &LStr,int GBuf);
+  /// Polar coordinates  полярные координаты
+  void PolarCoordinates(vector<int> &HBuf,
+                        vector<int> &GBuf,
+                        int LDrawSize,
+                        int smX,  int smY,
+                        int scope,int color);
+
+  /// Amplitude Frequency  амплитуда частота
+  void AmplitudeFrequency(vector<int> &GBuf,int smX,int smY,int scope,int color);
+
+  /// Подпрограмма расчета матожидания, дисперсии.
+  void Statistics(vector<int> &HBuf,
+                  vector<int> &GBuf,
+                  int Porog, int Delta );
+                  
+  /// Подпрограмма гребенчатого фильтра Comb Filter с параметрами ( dt, g ).
+  void CombFilter(vector<int> &GBuf, int dt, int g);
+
+  /// Подпрограмма расчета средней амплитуды в массиве с параметром ( ms-сдвиг ).
+  void AmplitudeS(vector<int> &GBuf, int ms, int &AmSum);
+
+  /// Подпрограмма визуализация спектра imaging spectrum.
+  void ImagingSpectrum(vector<int> &HBuf);
+
+  /// Подпрограмма объединяет: гребенчатый фильтр, амплитудный детектор.
+  void FunctionSpectrum(vector<int> &HBuf, int dt, int &AmSum);
+	
+  /// Полосовой фильтр Гауссиан (ГАУССИАН - Gaussian), попытка минимальной реализации.
+  void filterLaplasianM(vector<int> &HBuf,
+                        vector<int> &GBuf,
+                        int KHig, int KLow);
+
+  /// Фильтр низких частот, попытка минимальной реализации, адаптивный бордюр.
+  void filterHighM(vector<int> &In, int KHig);
+
+  int KFStrok;     /// номер оптимального коэффициента фильтрации строк
+  int DeltaNstr;   /// вычисленная высота строки
+  int DeltaNstrKH; /// вычисленная высота строки с учетом коэффициентов масштаба размера печа, KH=srcH/nrows;  KW=srcW/ncolumns;
+  int NLet;        /// вычисленное колличество букв в строке, умноженное на 4
+  int Nstr;        /// номер текущей обрабатываемой строки
+  int Nwrd;        /// номер текущей обрабатываемой буквы
+  int DeltaKh;     /// коэффициент формы страници (100*ncolumns/srcW*srcH/nrows;)
+  int NStrok;      /// вычисленное колличество строк в печа
+  int hStrMax;     /// вычисленное значение максимальной высоты строки на странице
+  int WordSMax;    /// вычисленное значение максимального колличества букв в строке по по всей странице
+/* */
+  int MeanSA;      /// вычисленный средний период букв умноженный на 10
+  int VarianceSA;  /// вычисленная дисперсия периода букв умноженныя на 10private:
+
+// --------------------------------------------------
+// --- Page Ramka Detector --- PageSegmentation.h ---
+/// Только - только начата , проверка идей
+
+  /// Запуск подпрограмм для выделения рамки вокруг текста печа.
+  void startFrameDetector(vector<int> &HStr,
+                          vector<int> &HBuf,
+                          vector<int> &GBuf);
+
+  /// Подпрограмма выделения рамки вокруг текста печа.
+  void pageFrameDetector(vector<int> &LStr,
+                         vector<int> &HStr,
+                         vector<int> &GBuf);
+
+  /// запуск подпрограммы фильтрации плато
+  void platoDetector(vector<int> &HStr,
+                     vector<int> &HBuf,
+                     vector<int> &GBuf);
+
+	/** @name _________________________OCR Function_____________________________________. */
+	//@{
+	///инициализация внутренних данных и запуск векторизации текста
+	void setData(vectorOCR *vectorBase_,vector<stringOCR>&strArray_, int iLeft_, int iTop_); //set actual data in object
+	///инициализация внутренних данных и запуск векторизации буквы на основе шрифта
+	void setFontData(vectorOCR *vectorBase_, glyphOCR *glyph, string &recordName_,  short wScale);
+	///визуализация контурной информации в отладочных массивах
+	void drawContour();
+	//@}
+private:
+	short max_down, startLetter, startLine, contourCount, contourIndex, indexFilter;
+	short res, xBegin, xEnd, xL,yL,hL, wL, dy_line, y_line, yLine, *ln,*lt;
+	short xMax,xMin,yMin,yMax, XMCenter, YMCenter, startDir;
+	short dlt_y, t, d, xl, yl, n,m;
+	int x_base,y_base,iLeft,iTop;
+	short *lineCoordinate, endContour;
+	OCRTextData* textOCRData; //all OCR data about current pecha
+	vectorOCR *vectorBase;
+	short yUp, yDown;
+	int i;
+	short *p3;
+	unsigned char *p1, *p2;
+	int w,h,a, resX, resY;
+	bool inBit[10];
+	bool *tPoint;
+	string recordName;
+
+    short vectorLimit;                    ///<inner constan for set vectorisation parameters
+    char ang[20000],angCalibrate[20000];
+    int angData[20000],angX[20000],angY[20000];
+    char angDiff[20000],angInt[20000],angDiffSum[20000],angDiffVector[20000],angFilterBase[20000];
+    char angIntSum[20000], angIntVector[20000];
+    int vectorMarker[20000];
+    char OCRZone[20000];
+    char *letterDataId;
+    unsigned char *lineData ;
+    int filterCount[300];
+    short filterIndex;
+    short angCount,lenCount,angLength;
+    int sqrt_buff[16000];         ///<cash of sqrt function
+    int sizeH;
+	
+	/** @name _________________________Contour detection_____________________________________. */
+	//@{
+	///found first point of letter's contour implemetnation of all method
+	void baseOCR(); 
+	///read pecha and set image handler set bitmap array from Bitmap
+	void setImageHandler();  
+	///read outer and inner contiur of letter from bitmap
+	void readOuterContour(int vL);
+    ///set center of letter and test vectors pair angle
+	void calibrateAngle();
+	///set andle difference array ablolute angle. Now we free from 0-360 border
+	void angleDiff();  
+	///filter angle difference array by impulse filter. remove all noise and small contour deformation - this create vectors in letter
+	void baseFilter();  
+	/// impulse filter implementation
+	void impulseFilter(char *angFilter); 
+	///(deptecated)
+	void setOCRZone();
+	int impFilter7(char *filterStr, char *aFt, short angLen);  ///< impFilter function for 7 pixel contour filter
+	int impFilter6(char *filterStr, char *aFt, short angLen);  ///< impFilter function for 6 pixel contour filter
+	int impFilter5(char *filterStr, char *aFt, short angLen);  ///< impFilter function for 5 pixel contour filter
+	int impFilter4(char *filterStr, char *aFt, short angLen);  ///< impFilter function for 4 pixel contour filter
+	int impFilter3(char *filterStr, char *aFt, short angLen);  ///< impFilter function for 3 pixel contour filter
+	int impFilter2(char *filterStr, char *aFt, short angLen);  ///< impFilter function for 2 pixel contour filter
+	void rootFilter(char *aFt, short angLen);                  ///< impFilter function for 3 pixel contour filter
+	//@}
+	
+	/** @name _________________________set vectors in letter and set letter records in base_____________________________________. */
+	//@{
+	//set vectors and write coordinates in two base - letters and vector
+	void setVector(short  contour);   
+	void setRecordInArray(char contour,short vCount);  //set record in vectorBase
+	void setVectorRecord(); //set vectors in vector OCR base
+	// create letter from user input. set all record for that new letter
+	//void createFilter:(vector<GP<vectorOCR> >&vectorBase, (NSString *)srcString :(NSString *)filterString;
+	short setVectorAngle(short x0, short y0, short x1, short y1);
+	
+	void readVSum(); //old one method
+	void set_sqrt_array();
+    int sqrtA(int data);
+    void setSize();
+    //@}
+	
+	///////////////////////**draw methods
+	//void)drawGraph(unsigned char *graphData_);
+	//-(NSImage *)drawMainOCRView:(vector<GP<glyphOCR> >&)vectorBase;
+	//-(NSImage *)drawAllOCRLetter;
+	OCRPoint CreatePoint(short x, short y);
+
+};
+
+
+// ---------------- IMPLEMENTATION
+
+inline unsigned int
+GBitsetContour::rows() const
+{
+  return nrows;
+}
+
+inline unsigned int
+GBitsetContour::columns() const
+{
+  return ncolumns;
+}
+
+
+
+inline unsigned int
+GBitsetContour::rowsize() const
+{
+  return bytes_per_row;
+}
+
+
+inline unsigned char *
+GBitsetContour::operator[](int row)
+{
+  if (row<0 || row>=nrows) {
+	return bytes_data;
+  }
+  return &bytes_data[row * bytes_per_row];
+}
+
+inline const unsigned char *
+GBitsetContour::operator[](int row) const
+{
+  if (row<0 || row>=nrows) {
+	return bytes_data;
+  }
+  return &bytes_data[row * bytes_per_row];
+}
+
+//inline GBitsetContour&
+//GBitsetContour::operator=(const GBitsetContour &ref)
+//{
+//  init(ref, ref.border);
+//  return *this;
+//}
+
+// ---------------- THE END
+
+}
+
+#endif
+
+

@@ -1,0 +1,442 @@
+﻿//C-
+//C- This software is subject to, and may be distributed under, the
+//C- GNU General Public License, either Version 2 of the license,
+//C- or (at your option) any later version. The license should have
+//C- accompanied the software or you may obtain a copy of the license
+//C- from the Free Software Foundation at http://www.fsf.org .
+//C-
+//C- This program is distributed in the hope that it will be useful,
+//C- but WITHOUT ANY WARRANTY; without even the implied warranty of
+//C- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//C- GNU General Public License for more details.
+//C-
+#ifndef _GBitsetMatrix_H_
+#define _GBitsetMatrix_H_
+#include "config.h"
+
+#include "GBitmap.h"
+#include "GBitmapInt.h"
+#include "OCRTypes.h"
+#include "glyphOCR.h"
+#include "GBitMask.h"
+
+
+#include <vector>
+#include <bitset>
+//#ifdef MAC
+// #include <bvector.h>
+//#endif
+#include <string.h>
+#include <stdio.h>
+#include <algorithm>
+#include <fstream>
+
+using namespace std;
+
+
+namespace ocr {
+
+///класс матричного распознавания. Основной вычислительный движок корреляции букв из базы (letterBase *aliKali) и текста. 
+	
+class GBitsetMatrix{
+protected:
+  GBitsetMatrix(void);
+  GBitsetMatrix(int nrows, int ncolumns, int border=0);
+  GBitsetMatrix(const GBitsetMatrix *ref);
+  GBitsetMatrix(const GBitmap *ref, short stepW, short stepH,short flipV=0);
+  GBitsetMatrix(const GBitmap *ref, short x, short y, short w, short h, short stepW, short stepH, short flipV=0);
+  GBitsetMatrix(const GBitsetMatrix *ref, int border);
+public:
+  virtual ~GBitsetMatrix();
+  void destroy(void);
+  /** @name Construction. */
+  //@{
+  /** \brief Constructs an empty GBitsetMatrix object.  The returned GBitsetMatrix has zero rows and zero columns. Use function \Ref{init} to change the size of the image. */
+  static GBitsetMatrix* create(void) {return new GBitsetMatrix;}
+
+  /** \brief Constructs a GBitsetMatrix with #nrows# rows and #ncolumns# columns.  All pixels are initialized to white. */
+  static GBitsetMatrix* create(const int nrows, const int ncolumns, const int border=0)
+  {return new GBitsetMatrix(nrows,ncolumns, border); }
+
+  /** \brief Copy constructor. Constructs a GBitsetMatrix by replicating the size and the contents of GBitsetMatrix #ref#. */
+  static GBitsetMatrix* create(const GBitsetMatrix *ref)
+  {return new GBitsetMatrix(ref);}
+
+  /** \brief Copy constructor. Constructs a GBitsetMatrix by replicating the size and the contents of GBitmap #ref#. */
+  static GBitsetMatrix* createResize(const GBitmap *ref, short stepW, short stepH, short flipV)
+  {return new GBitsetMatrix(ref,stepW,stepH,flipV);}
+
+   /** \brief Copy constructor. Constructs a GBitsetMatrix by region of the contents of GBitmap #ref#. */
+  static GBitsetMatrix* createRegion(const GBitmap *ref, short x, short y, short w, short h, short stepW, short stepH, short flipV)
+  {return new GBitsetMatrix(ref,x,y,w,h,stepW,stepH,flipV);}
+
+
+  /** \brief Constructs a GBitsetMatrix by copying the contents of GBitsetMatrix #ref#.*/
+  static GBitsetMatrix* create(const GBitsetMatrix *ref, const int border)
+  { return new GBitsetMatrix(ref,border); }
+  //@}
+   /** @name Initialization. */
+  //@{
+      /** \brief Resets this GBitsetMatrix size to #nrows# rows and #ncolumns# columns and sets all pixels to white. */ 
+  void init(int nrows, int ncolumns, int border);
+      /** \brief Initializes this GBitsetMatrix with the contents of the GBitsetMatrix #ref#. */
+  void init(const GBitsetMatrix *ref, int border);
+  /** \brief Initializes this GBitsetMatrix with the contents of the GBitsetMatrix #ref#. stepH, stepW is step for reduce image size */
+  void init(const GBitmap *ref, short stepW, short stepH, short flipV);
+  /** \brief  Initializes this GBitsetMatrix with a rectangular segment #rect# of GBitmap #ref#. */
+  void init(const GBitmap *ref, short x, short y, short w, short h, short stepW, short stepH, short flipV);
+
+  GBitsetMatrix* operator=(const GBitsetMatrix *ref);
+  /** \bref Initializes all the GBitsetMatrix pixels to value #value#. */
+  void fill(bool value);
+  //@}
+
+  /** @name Accessing the pixels and dimention data. */
+  //@{
+  /** \brief Returns the number of rows (the image height). */
+  unsigned int rows() const;
+  /** \brief Returns the number of columns (the image width). */
+  unsigned int columns() const;
+  /** \brief Returns the size the border */
+  unsigned int borderSize() const;
+  /** \brief Returns a constant pointer to the N byte of row #row#.This pointer can be used as an array to read the columns elements. */
+  const bool *operator[] (int row) const;
+  /** \brief Returns a pointer to the first byte of row #row#.This pointer can be used as an array to read or write the row elements. */
+  bool *operator[] (int row);
+  /** \brief Returns the size of a row in memory (in pixels). */
+  unsigned int rowsize() const;
+  /* \brief Копирует маску во внутренний массив увеличивает счетчик массива (deprecated)*/
+  void setMask(GBitMask32 *srcMask, int maskSize);
+
+  //@}
+
+protected:
+  unsigned short nrows;         ///<высота битмэпа
+  unsigned short ncolumns;      ///<ширина битмэпа
+  unsigned short border;        ///<размер бордюра
+  unsigned short bits_per_row;  ///<количество битов в строке
+  unsigned int *srcInt;         ///<буфер массива горизонтальных строк
+  unsigned int *sInt;           ///<буфер транспонированого по вертикали массива горизонтальных строк
+  short stepBit;
+  short srcW;
+  short srcH;
+
+public:
+  bool  *bits_data;               ///<буфер данных битмепа в байтах
+  unsigned char cacheCor[4352];   ///< массив кэша коэффициента корреляции по области поиска максимума 128*34
+  unsigned int maskCor[384*32*4]; ///< кэш масок ON  и  OFF  (setMatrix_Lion)
+  int data_size;                  ///<количество пикселов в битмэпе
+  #ifdef DEBUGLVL
+  //GBitmap *destData;
+	ofstream c_out;               ///<вывод в отладочный файл
+  #ifdef MAC
+	drawDataRecord drawGraph;     ///<отладочный графический массив
+
+  #endif
+#endif
+
+public:
+#ifndef NDEBUG
+  void check_border() const;     ///<(deprecated)
+#endif
+
+//float Alpha;
+  short deltaX;
+  short lineCount;               ///<общее количество строк на странице
+  int stringNum;                 ///<номер строки в тексте
+#ifdef DEBUGLVL_GREY								
+  GBitmap* drawData;             ///<отладочный графический массив
+#endif
+#ifdef DEBUGLVL_RGB								
+  GBitmapInt* drawDataRGB;       ///<отладочный графический массив
+#endif
+  //GBitmapInt* line;
+  short baseDirection;            ///<направление письма в языке
+  vector<stringOCR>*strArray;     ///<массив координат строк и букв
+  glyphOCR *aliKali;              ///<ссылка на базу букв 
+  vector<frameOCR>frameArray;     ///<массив координат блоков букв в строке
+  GBitMask32 *mask32[32];         ///массив масок 32х32
+  int mask32Count;                ///<размерность массива масок 32х32
+
+// --------------------------------------------------------
+// --------------------------------------------------------
+// --- Matrix function---GBitsetMatrix_Starting.h ---
+	
+	
+ /// Запуск подпрограммы управления матрицы и установление начальных прараметров
+  void Matrix_Starting(vector<stringOCR>&strArray_,glyphOCR *aliKali_,int stringNum_);
+ /// основная функция матричной корреляции букв базы и текста
+  void letterCorrelation ( commandData *inData,
+							vector<OCRMatch>&matchLine,
+							letterBase *aliKali,
+							int y0,
+							int y1,
+						    int limit,
+							int print);
+  ///тестовая функция вычисления корреляции одной буквы из базы
+  int letterToLetterCorrelation(glyphOCR *glyph,
+						    int y0,
+						    int y1,
+							int print);
+  ///вычисление велицины кореляции буквы из базы по заданным координатам C++ версия	
+  int  setMatrixCorrelation(GBitMask32 *mask32,
+							int xSrc0,
+							int ySrc0,
+							int xSrc1,
+							int ySrc1,
+							int dlt,
+							int *maxX,
+							int *maxY,
+							ofstream &c_out);
+	
+  ///вычисление величины корреляции буквы из базы по заданным координатам ASM версия	
+ int setMatrixCorrelationASM(GBitMask32 *mask32,
+							int xSrc0,
+							int ySrc0,
+							int xSrc1,
+							int ySrc1,
+							int dlt,
+							int *maxX,
+							int *maxY,
+							ofstream &c_out);
+ ///вычисление величины корреляции признака буквы из базы по заданным координатам прямоугольника методом "Льва в пустыне" 	
+ int setMatrix_Lion(GBitMask32 *mask32,
+							int xSrc0,
+							int ySrc0,
+							int xSrc1,
+							int ySrc1,
+							int dlt,
+							int *maxX,
+							int *maxY,
+							ofstream &c_out,
+							int print);
+  ///вычисление величины корреляции признака буквы из базы по заданным координатам 		
+  int setMatrix_Point(GBitMask32 *mask32,
+							int xP,
+							int yP,
+							int sx0,
+							int sy0,
+							int w,
+							int *ch,
+							ofstream &c_out,
+							int print);
+  ///вычисление величины корреляции признака буквы из базы по заданным координатам  (тест)	
+  int setMatrix_PointT(GBitMask32 *mask32,
+							int xP,
+							int yP,
+							int sx0,
+							int sy0,
+							int w,
+							int *ch,
+							ofstream &c_out,
+							int print);
+  ///тестовая функция
+  int setMatrixCorrelation_WORK(GBitmap *img, GBitMask32 *mask32);
+
+  ///Подсчет единичных битов в числе
+  void bitsCountA( int Sbits );
+  ///Подсчет единичных битов в числе	
+  void bitsCountB( int Sbits );
+  void bitsCountC();
+  void MatrixT( unsigned int *BufOn, unsigned int *BufOff, int wr, int dlt );
+  void bitsCountD( int Sbits );
+  /// Подпрограмма чистки (border) входного однобитового массива. ВХОД
+  /// затирает мусор с краев скана + border
+  void data_null_border();
+
+
+ /*
+// --------------------------------------------------------
+// --- Algorithm --- GBitsetMatrix_algorithm.h ---
+
+
+  /// Фильтр низких частот.
+  void filterHigh(vector<int> &In,int KHig);
+
+  // Фильтр низких частот, адаптивный бордюр.
+  //void filterHighM(vector<int> &In, int KHig);
+
+  /// Полосовой фильтр Гауссиан (Gaussian).
+  void filterLaplasian(vector<int> &In, int KHig, int KLow);
+
+  /// Полосовой фильтр Гауссиан (Gaussian), адаптивный бордюр.
+  void filterLaplasianM1(vector<int> &In, int KHig, int KLow);
+
+  /// Полосовой фильтр Гауссиан (Gaussian), адаптивный бордюр. Входной буфер HBuf[y]
+  void filterLaplasianM(vector<int> &HBuf, vector<int> &GBuf, int KHig, int KLow);
+
+  /// Полосовой фильтр Гауссиан (Gaussian), адапт бордюр. Входной ST буфер BufS[y]
+  void filterLaplasStM(int *Buf1, int *BufTL, int size,  int KHig, int KLow);
+
+
+  // вертикальные и горизонтальные локальные сумммы входного массива bits_data
+  // vertical and horizontal local summmy //
+  ///void BitsSummmyWH(int NSumm);
+
+
+  /// ВИЗУАЛИЗАЦИЯ АНАЛОГОВАЯ вертикальных графиков (GBitsetMatrix)
+  void drawNFase(vector<vector<int> > &INFase, int color);
+
+
+  /// Визуализация аналоговая вертикальных графиков L
+  void LDraw(vector<int> &HBuf, int sm, int color);
+  /// Визуализация аналоговая вертикальных графиков H переменной длинны
+  void LDrawVar(vector<int> &HBuf, int HDrawSize, int sm, int scope, int color);
+  /// Визуализация аналоговая горизональных графиков W
+  void WDraw(vector<int> &HBuf, int sm, int color);
+  /// Визуализация аналоговая горизональных графиков W переменной длинны
+  void WDrawVar(vector<int> &HBuf, int WDrawSize, int sm, int scope, int color);
+  /// Визуализация аналоговая  прямоугольников в структурах для строк
+  void stringDraw(int color);
+  /// Визуализация аналоговая  прямоугольников в структурах для колонок
+  void frameDraw(int color);
+  /// Визуализация аналоговая  прямоугольников в структурах для блоков слов
+  void lineDraw(int color);
+  /// Визуализация аналоговая  прямоугольников в структурах для блоков букв
+  void blockDraw(int color);
+  /// Визуализация аналоговая  прямоугольников в структурах для букв
+  void wordDraw(int color);
+  /// Визуализация аналоговая  прямоугольников в структурах для точек
+  void pointDraw(int color);
+  /// Визуализация аналоговая  прямоугольников в структурах для огласовок
+  void vowelDraw(int color);
+  /// Рисование вертикальных линий
+  void LineVertical(int sm, int color);
+  /// Визуализация аналоговая результатов векторизации контуров //
+  void vDraw();
+  /// Sorting  сортировка
+  void Sort(vector<int> &GBuf, int NSort);
+  /// Polar coordinates  полярные координаты
+  void PolarCoordinates(vector<int> &HBuf, vector<int> &GBuf, int LDrawSize,
+						int smX,  int smY, int scope,int color);
+
+
+
+
+// --------------------------------------------------------
+// ---- Test ---- GBitsetMatrix_Test.h ---
+
+  /// start Test.
+  void startTest();
+
+  /// интегрирующий фильтр (integrating filter), адаптивный бордюр.Test
+  void filterIntegrator(vector<int> &In, int KHig);
+
+  /// Фильтр низких частот.Test
+  void filterHighTest(vector<int> &In,int KHig);
+
+  /// Полосовой фильтр Гауссиан (Gaussian), адаптивный бордюр.Test
+  void filterLaplasianTest(vector<int> &In, int KHig, int KLow);
+
+  /// тестирование массива BitsBuf
+  void testBitsBuf();
+
+
+// --------------------------------------------------------
+  /// Подпрограмма нормализации выходных данных с учетом величины бордюра
+	void data_normalisation();
+// --------------------------------------------------------
+ */
+
+
+  signed  char GrafT[32][16]; ///< массив управления графикой во всех подпрограммах
+
+/* */
+
+  int ncnr;        ///< наибольшее из ncolumns и nrows те из ширины и высоты печа
+
+  vector<int> HBuf;   ///< базовый массив
+  vector<int> GBuf;   ///< базовый массив
+
+  vector<int> BufS;   ///< текущий массив
+  vector<int> BufT;   //< текущий массив
+  vector<int> BufR;   ///< текущий массив
+  vector<int> BufL;   ///< текущий массив
+  vector<int> BufHelp;///< текущий массив
+
+  vector<int> HStr;   ///< массив заполненный горизонтальными суммами
+  vector<int> HStS;   ///< массив заполненный горизонтальными дифференциальными суммами
+  vector<int> LStr;   ///< массив заполненный вертикальными суммами
+  vector<int> LStS;   ///< массив заполненный вертикальными суммами по всей странице
+/* */
+
+
+ int szf;       ///< обычно в 32р системах sfz=4=32/8;  szf=sizeof(int);
+ int *ImBuf;    ///< запрос памяти с очисткой 0
+ int ImBf;      ///< текущий размер массива ImBuf
+ int *ReBuf;    ///< запрос памяти с очисткой 0
+ int ReBf;      ///< текущий размер массива ReBuf
+ int m;         ///< ширина двухмерного массива (если массивы так используем)
+ int *BufIn;    ///< запрос памяти с очисткой 0
+ int BfIn;      ///< текущий размер массива ImBuf
+ int *BufOu;    ///< запрос памяти с очисткой 0
+ int BfOu;      ///< текущий размер массива ImBuf
+
+
+};
+
+
+
+
+// --------------------------------------------------------
+
+// ---------------- IMPLEMENTATION
+
+inline unsigned int
+GBitsetMatrix::rows() const
+{
+  return nrows;
+}
+
+inline unsigned int
+GBitsetMatrix::columns() const
+{
+  return ncolumns;
+}
+
+
+inline unsigned int
+GBitsetMatrix::borderSize() const
+{
+  return border;
+}
+
+
+inline unsigned int
+GBitsetMatrix::rowsize() const
+{
+  return bits_per_row;
+}
+
+
+inline bool*
+GBitsetMatrix::operator[](int row)
+{
+  if (row<0 || row>=nrows) {
+	return  bits_data;
+  }
+  return &bits_data[row * bits_per_row + border];
+}
+
+inline const bool*
+GBitsetMatrix::operator[](int row) const
+{
+   if (row<0 || row>=nrows) {
+	return bits_data;
+  }
+  return &bits_data[row * bits_per_row + border];
+}
+
+inline GBitsetMatrix*
+GBitsetMatrix::operator=(const GBitsetMatrix*ref)
+{
+  init(ref, ref->border);
+  return this;
+}
+// ---------------- THE END
+
+}//namespace
+
+#endif
+
+
