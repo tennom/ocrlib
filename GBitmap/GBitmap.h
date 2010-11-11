@@ -11,7 +11,7 @@
 //C- GNU General Public License for more details.
 //C-
 
-//новая версия 11.11.2010_1 
+//новая версия 11.11.2010_3
 
 //if ( ImBuf !=NULL ) farfree(ImBuf);  // освобождение памяти
 //q=(тип_q *)farmalloc(n_byte);        // запрос памяти без очистки 0
