@@ -31,7 +31,7 @@ float GBitmap::detectSkew( unsigned int g ) {
 	unsigned int w_g=w/g;      // w_8=w/8;    >>3 деление на 8  // w_8=(w+7)/8;  //***
 	unsigned int i, j;
 	
-	TIME_START  //  time=0.516  w=2698 h= 4000
+	//Vic TIME_START  //  time=0.516  w=2698 h= 4000
 	
 	// вычисление w2 как ближайшей степени двойки w, причем w2 >= w,
 	// напрямер если w=1035 то w2=2048
@@ -97,7 +97,7 @@ float GBitmap::detectSkew( unsigned int g ) {
 	 cout<<"iskew="<<iskew<<END<<"alpha="<<alpha<<END<<END;
 	 */
 	
-	TIME_PRINT
+	//Vic TIME_PRINT
 	
 	return alpha;
 	

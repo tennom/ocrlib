@@ -24,7 +24,7 @@
 namespace ocr{
 	
 	
-#include "LoadImage.h"
+#include "LoadImageMac.h"
 #include "readLetterBase.h"
 #include "drawBase.h"
 #include "drawPage.h"	

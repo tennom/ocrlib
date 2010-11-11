@@ -111,8 +111,8 @@ if(aliKali->letterCount<1)return;
 		                }
 						*/ 
 						cout<<" textLineSize1="<<textLineSize;
-		                float scale=1;
-		                int needScaleFlag=0;
+		                float scale=0;   
+		                int needScaleFlag=1; //1 если нужно масштабировать строку
 		               
 		
 		                GBitmap *line=GBitmap::createRegion(inputBitmap, 
@@ -580,6 +580,7 @@ DT("m3_5_1 space=");
 									pageText.push_back(wP); 
 								}
                                 //сохраняем статистику использования буквы
+							  
 							aliKali[0][matchLine[m].letterIndex]->cn++;
 							aliKali[0][matchLine[m].letterIndex]->crSum+=matchLine[m].correlation;
 						}

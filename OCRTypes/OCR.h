@@ -6,4 +6,4 @@
 using namespace std;
 
 //#include "OCRTypes.h"
-#include "php2stl.h"
+#include "OCRString/php2stl.h"

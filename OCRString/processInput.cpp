@@ -10,9 +10,9 @@
 //C- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //C- GNU General Public License for more details.
 //C-
-#include "php2stl.h"
-#include "GImageEditor.h"
-#include "GLogicProcessor.h"
+#include "OCRString/php2stl.h"
+#include "GImageEditor/GImageEditor.h"
+#include "GLogicProcessor/GLogicProcessor.h"
 
 string processInput(commandData *inputData, string &dataStr){
 	int print=1;

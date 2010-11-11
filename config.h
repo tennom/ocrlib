@@ -1,9 +1,15 @@
 #ifndef CONFIG_H
 #define CONFIG_H
+#include <time.h>
 
 
 #define MACOS
 //#define WIN32
+
+//#define WIN_VS
+//Rem by Vic 
+//#define WIN_BS //BorlandStudio
+
 #define MACPRO
 
 #ifdef MACPRO

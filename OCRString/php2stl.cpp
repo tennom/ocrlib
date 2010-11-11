@@ -1,4 +1,4 @@
-#include "php2stl.h"
+#include "OCRString/php2stl.h"
 int strLen(string &input){return input.size();}
 int strLenW(wstring &input){return input.size();}
 

@@ -22,19 +22,19 @@
 
 #include <stdlib.h>
 
-#include "OCRTypes.h"
-#include "pugixml.hpp"
-#include "GBitmap.h"
-#include "GBitmapInt.h"
-#include "GBitset_.h"
-#include "GBitsetMatrix.h"
-#include "GBitsetContour.h"
-#include "GBitsetOCR.h"
-#include "php2stl.h"
-#include "tiffio.h"
+#include "OCRTypes/OCRTypes.h"
+#include "pugixml/pugixml.hpp"
+#include "GBitmap/GBitmap.h"
+#include "GBitmapInt/GBitmapInt.h"
+#include "GBitset/GBitset_.h"
+#include "GBitsetMatrix/GBitsetMatrix.h"
+#include "GBitsetContour/GBitsetContour.h"
+#include "GBitsetOCR/GBitsetOCR.h"
+#include "OCRString/php2stl.h"
+#include "../../libtiff/tiffio.h"
 
 
-#ifdef WIN32
+#ifdef WIN_BS //Vic WIN32
 #include <Classes.hpp>
 #include <Controls.hpp>
 #include <StdCtrls.hpp>
@@ -85,7 +85,7 @@ public:
 		int pechaDataLoaded;
 		string mainString;
 	    unsigned char hexCode[18991]; //byte to char string hex code
-#ifdef WIN32	  
+#ifdef WIN_BS//Vic WIN32	  
 		TIEBitmap *bitmapImg;
 #endif	
 		short PechaLoaded;

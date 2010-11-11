@@ -35,10 +35,10 @@
 #endif
 
 
-#include "OCRTypes.h"
-#include "php2stl.h"
-#include "GImageEditor.h"
-#include "GLogicProcessor.h"
+#include "OCRTypes/OCRTypes.h"
+#include "OCRString/php2stl.h"
+#include "GImageEditor/GImageEditor.h"
+#include "GLogicProcessor/GLogicProcessor.h"
 
 #pragma hdrstop
 

@@ -4,7 +4,7 @@
 #include "glyphOCR.h"
 #include <string.h>
 #include <fstream>
-#include "php2stl.h"
+#include "OCRString/php2stl.h"
 
 // ----- constructor and destructor
 //________glyphOCR_________________

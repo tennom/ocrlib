@@ -27,19 +27,20 @@
 #include <wchar.h>
 #include <wctype.h>
 #include <sys/stat.h>
-#include "OCRTypes.h"
-#include "pugixml.hpp"
-#include "GBitmap.h"
-#include "GBitmapInt.h"
-#include "GBitset_.h"
-#include "GBitsetMatrix.h"
-#include "GBitsetContour.h"
-#include "GBitsetOCR.h"
-#include "php2stl.h"
-#include "GImageEditor.h"
-#include "GLogicProcessor.h"
-#include "GSocket.h"
-#include "libtiff.h"
+
+#include "OCRTypes/OCRTypes.h"
+#include "pugixml/pugixml.hpp"
+#include "GBitmap/GBitmap.h"
+#include "GBitmapInt/GBitmapInt.h"
+#include "GBitset/GBitset_.h"
+#include "GBitsetMatrix/GBitsetMatrix.h"
+#include "GBitsetContour/GBitsetContour.h"
+#include "GBitsetOCR/GBitsetOCR.h"
+#include "OCRString/php2stl.h"
+#include "GImageEditor/GImageEditor.h"
+#include "GLogicProcessor/GLogicProcessor.h"
+#include "GSocket/GSocket.h"
+#include "../libtiff/libtiff.h"
 
 
 #endif

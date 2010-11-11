@@ -3,9 +3,9 @@
 #define _GBitsetContour_H_
 #include "config.h"
 
-#include "GBitmap.h"
-#include "OCRTypes.h"
-#include "glyphOCR.h"
+#include "GBitmap/GBitmap.h"
+#include "OCRTypes/OCRTypes.h"
+#include "OCRTypes/glyphOCR.h"
 
 #ifdef PC
   #define DRAW1  /// аналоговое рисование

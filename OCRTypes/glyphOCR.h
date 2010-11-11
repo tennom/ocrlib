@@ -6,7 +6,7 @@
 #include<vector>
 #include<list>
 #include<map>
-#include "GBitmask.h"
+#include "GBitmask/GBitmask.h"
 #include "OCRTypes.h"
 
 using namespace std;

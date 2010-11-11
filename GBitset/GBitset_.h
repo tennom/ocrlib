@@ -18,10 +18,12 @@
 #include <iostream>
 using namespace std;
 
-#include "GBitmap.h"
-#include "GBitmapInt.h"
-#include "OCRTypes.h"
-#include "OCRAlgorihtm.h"
+#include "../GBitmap/GBitmap.h"
+#include "GBitmapInt/GBitmapInt.h"
+#include "OCRTypes/OCRTypes.h"
+
+//Vic error in file naming
+#include "OCRAlgorithm/OCRAlgorihtm.h"
 
 
 #include <vector>
@@ -29,6 +31,10 @@ using namespace std;
 #ifdef MACOS
 #include <bvector.h>
 #endif
+#ifdef WIN_VS //Visual Studio 2008 doesn't define bit_vector by default.
+ typedef _Bvector bit_vector;
+#endif /*WIN_VS */
+
 #include <string>
 #include <algorithm>
 #include <fstream>

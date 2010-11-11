@@ -28,10 +28,10 @@
 #include <sys/types.h>
 #include <algorithm>
 
-#include "OCRTypes.h"
-#include "glyphOCR.h"
-#include "pugixml.hpp"
-#include "php2stl.h"
+#include "OCRTypes/OCRTypes.h"
+#include "OCRTypes/glyphOCR.h"
+#include "pugixml/pugixml.hpp"
+#include "OCRString/php2stl.h"
 
 //#include <boost/xpressive/xpressive.hpp>
 

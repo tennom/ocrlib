@@ -12,9 +12,9 @@
    #include <unistd.h>
 #endif
 #include <sys/stat.h>
-#include "OCRTypes.h"
-#include "pugixml.hpp"
-#include "CgiParser.h"
+#include "OCRTypes/OCRTypes.h"
+#include "pugixml/pugixml.hpp"
+#include "cgi/CgiParser.h"
 
 using namespace std;
 using namespace ocr;

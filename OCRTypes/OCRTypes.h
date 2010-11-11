@@ -6,7 +6,7 @@
 #include<vector>
 #include<list>
 #include<map>
-#include "GBitmask.h"
+#include "GBitmask/GBitmask.h"
 
 using namespace std;
 namespace ocr {
@@ -545,7 +545,8 @@ ostream&operator<<(ostream& s, GTextBufer z);
 				letterKey = 0,
 
         };
- 	//РºР¾Р½ССР°Р½СС Р´Р»С ССР½РºСРёР¹ OCR
+ 	
+		//константы для функций обработки изображений
 				enum drawConst{
 				IMGFLIP=1,
 				IMGNOFLIP=0,

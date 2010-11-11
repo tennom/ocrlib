@@ -471,12 +471,13 @@ Cleanup:
 
 /** Open socket connection and send string by socket (wrapper)*/
 int GSocket::sendTextBySocket(const char *data){
-	sendText(data, strlen(data));
+	//Vic sendText(data, strlen(data));
+	return sendText(data, strlen(data));
 }
 
 /** Open socket connection and send string by socket (wrapper)*/
 int GSocket::sendTextBySocket(string &data){
-	sendText(data.c_str(), data.size());
+	return sendText(data.c_str(), data.size());
 }
 #endif
 

@@ -16,8 +16,8 @@
 
 
 
-# include "GBitmap.h"
-# include "config.h"
+# include "../GBitmap/GBitmap.h"
+# include "../config.h"
 #include <fstream>
 #include <iostream>
 using namespace std;

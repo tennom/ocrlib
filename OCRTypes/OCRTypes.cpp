@@ -19,7 +19,7 @@
 #include "OCRTypes.h"
 #include <string.h>
 #include <fstream>
-#include "php2stl.h"
+#include "OCRString/php2stl.h"
 
 
 namespace ocr {

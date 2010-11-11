@@ -16,9 +16,9 @@
 
 # include "config.h"
 
-#include "OCRTypes.h"
-#include "GBitmap.h"
-#include "php2stl.h"
+#include "OCRTypes/OCRTypes.h"
+#include "GBitmap/GBitmap.h"
+#include "OCRString/php2stl.h"
 #include <string.h>
 #include <fstream>
 

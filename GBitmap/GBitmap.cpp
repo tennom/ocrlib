@@ -10,11 +10,11 @@
 //C- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //C- GNU General Public License for more details.
 //C-
-# include "GBitmap.h"
-# include "config.h"
+#include "GBitmap.h"
+#include "config.h"
 #include <string.h>
 #include <stdio.h>
-#include "php2stl.h"
+#include "OCRString/php2stl.h"
 
 namespace ocr{
 
@@ -317,7 +317,7 @@ void GBitmap::scaleFast(const GBitmap*ref, float scale){
 				int p,new_p;             ///  пиксел, бижайший пиксел
 				//unsigned char *d;
 				//scale=1.33;
-TIME_START
+ TIME_START
 				// float scale=0.536;   масштаб нового массива float, ипи double
 				if (scale>5){scale=5;}   if (scale<0.2){scale=0.2;} // ограничения на масштаб
 				int new_w=w*scale;  // ширина нового массива

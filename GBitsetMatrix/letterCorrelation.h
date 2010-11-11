@@ -52,9 +52,9 @@ __asm {     //  movups (без требования выравнивания)
 	// загрузка констант в регистр 128p SSE
 	//  movups без требования выравнивания  ( MOVAPS должны быть выровнены )
 #ifdef WIN32
-	movups          xmm5, dqword ptr constF+16;  // 55  Пересылка данных (128 бит)
-	movups          xmm6, dqword ptr constF;     // 33  + MOVDQU
-	movups          xmm7, dqword ptr constF+32;  // 0f
+	//Vic movups          xmm5, dqword ptr constF+16;  // 55  Пересылка данных (128 бит)
+	//Vic movups          xmm6, dqword ptr constF;     // 33  + MOVDQU
+	//Vic movups          xmm7, dqword ptr constF+32;  // 0f
 //	movups          xmm2, dqword ptr constF+48;  // TEST
 #else
 	movups          xmm5, [constF+16];  // 55  Пересылка данных (128 бит)

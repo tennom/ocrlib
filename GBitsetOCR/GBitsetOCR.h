@@ -2,12 +2,12 @@
 #define HEADER_GBITSETOCR
 
 #include "config.h"
-#include "GBitmap.h"
-# include "GLogicProcessor.h"
-#include "GBitsetMatrix.h"
-#include "OCRTypes.h"
-#include "php2stl.h"
-#include "GImageEditor.h"
+#include "GBitmap/GBitmap.h"
+# include "GLogicProcessor/GLogicProcessor.h"
+#include "GBitsetMatrix/GBitsetMatrix.h"
+#include "OCRTypes/OCRTypes.h"
+#include "OCRString/php2stl.h"
+#include "GImageEditor/GImageEditor.h"
 
 
 

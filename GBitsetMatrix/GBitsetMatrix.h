@@ -14,11 +14,11 @@
 #define _GBitsetMatrix_H_
 #include "config.h"
 
-#include "GBitmap.h"
-#include "GBitmapInt.h"
-#include "OCRTypes.h"
-#include "glyphOCR.h"
-#include "GBitMask.h"
+#include "GBitmap/GBitmap.h"
+#include "GBitmapInt/GBitmapInt.h"
+#include "OCRTypes/OCRTypes.h"
+#include "OCRTypes/glyphOCR.h"
+#include "GBitMask/GBitMask.h"
 
 
 #include <vector>
