@@ -15,10 +15,9 @@
 
 #ifdef MACPRO
 //#define HASH_PATH "/Volumes/GOMDE_500Gb/_HASH/"	
-#define HASH_PATH "_HASH/"
-#endif
-#ifdef WIN_BS
-  #define HASH_PATH "_HASH/"
+#define HASH_PATH "_HASH/"	
+#else
+//#define HASH_PATH "/Volumes/A_DATA_64Gb/_HASH/"
 #endif
 
 
