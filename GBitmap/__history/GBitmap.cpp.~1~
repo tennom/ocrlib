@@ -1,6 +1,4 @@
-﻿//12 ноября 2010 года.
-
-//C-
+﻿//C-
 //C- This software is subject to, and may be distributed under, the
 //C- GNU General Public License, either Version 2 of the license,
 //C- or (at your option) any later version. The license should have
@@ -18,10 +16,11 @@
 #include <stdio.h>
 #include "php2stl.h"
 
+//12 ноября 2010 года.
+
 namespace ocr{
 
 #include "detectorRadon.h"
-#include "focalPoint.h"
 
 	
 GBitmap::~GBitmap(){
