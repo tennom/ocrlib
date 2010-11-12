@@ -1,4 +1,4 @@
-//C-
+﻿//C-
 //C- This software is subject to, and may be distributed under, the
 //C- GNU General Public License, either Version 2 of the license,
 //C- or (at your option) any later version. The license should have
@@ -18,7 +18,7 @@
 
 #ifndef _GImageEditor_H_
 #define _GImageEditor_H_
-#include "config.h"
+#include "../config.h"
 
 #include <stdlib.h>
 
