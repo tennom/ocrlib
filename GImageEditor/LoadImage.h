@@ -1,4 +1,6 @@
-﻿/** \fn void GImageEditor::RemoveBorder(GBitmap *data,  GBitset *set,
+﻿//12.11.2010
+
+/** \fn void GImageEditor::RemoveBorder(GBitmap *data,  GBitset *set,
  string &filePath)
  \brief Remove black border around scaned page  
  
