@@ -57,7 +57,7 @@
 
 
 #ifdef REPORT
-#define DM(x) //cout<<x;
+#define DM(x) cout<<x;
 #define DP(x) //out<<x;
 #define DL(x) out<<x;
 #define DC(x) //cout<<x;
