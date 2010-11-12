@@ -1,4 +1,6 @@
-﻿/** \fn void GImageEditor::RemoveBorder(GBitmap *data,  GBitset *set,
+﻿//12.11.2010
+
+/** \fn void GImageEditor::RemoveBorder(GBitmap *data,  GBitset *set,
  string &filePath)
  \brief Remove black border around scaned page  
  
@@ -564,7 +566,7 @@ void GImageEditor::WriteImageData(GBitset *data,string &path, bool flip){
 	TIEBitmap *bitmapImg=new TIEBitmap;
 	bitmapImg->Width=w;
 	bitmapImg->Height=h;
-	
+
 	//DM("w="<<w<<" h="<<h<<END);
 	unsigned char *pSrc;
 	unsigned char *pDest;
@@ -989,10 +991,8 @@ GBitmap* GImageEditor::LoadImageData(string &inputPath,bool invert){
 	if(!is_file(inputPath)){cout<<"no file "<<inputPath<<endl; return 0;}
 	GBitmap *pechaImg_;
 	int print=1;
-
 #ifdef WIN_BS
 	bitmapImg=new TIEBitmap;
-	
 	ifstream in; in.open(inputPath.c_str());
 	if(in==NULL){exit(0);};
 	in.close();
@@ -1033,7 +1033,7 @@ GBitmap* GImageEditor::LoadImageData(string &inputPath,bool invert){
 	DT("pechaImg_w="<<pechaImg_->columns()<<" pechaImg_h="<<pechaImg_->rows()<<endl);
 
 	delete bitmapImg;
-	
+	pechaDataLoaded=1;
 #endif
 #ifdef MACOS
 	
@@ -1140,8 +1140,9 @@ GBitmap* GImageEditor::LoadImageData(string &inputPath,bool invert){
 	}else{
 		return 0;
 	}
-#endif
 	pechaDataLoaded=1;
+#endif
+
 	return pechaImg_; 
 	
 }//_____________________________________________________________________________
