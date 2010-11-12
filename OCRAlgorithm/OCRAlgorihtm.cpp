@@ -30,10 +30,10 @@ OCRFilter::OCRFilter(int size){
 ///////////////////////////////////////
 
   // выход в случае отсутствия свободной памяти запрашиваемого размера
-  if (ImBuf==NULL) {DM("ImBuf");exit (1);}
-  if (ReBuf==NULL) {DM("ReBuf");exit (1);}
-  if (BufIn==NULL) {DM("BufIn");exit (1);}
-  if (BufOu==NULL) {DM("BufOu");exit (1);}
+  if (ImBuf==NULL) {DC("ImBuf");exit (1);}
+  if (ReBuf==NULL) {DC("ReBuf");exit (1);}
+  if (BufIn==NULL) {DC("BufIn");exit (1);}
+  if (BufOu==NULL) {DC("BufOu");exit (1);}
 }
 
 

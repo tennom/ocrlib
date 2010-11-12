@@ -11,7 +11,7 @@
 //C- GNU General Public License for more details.
 //C-
 
-# include "config.h"
+# include "../config.h"
 
 #include "GImageEditor.h"
 #include <string.h>

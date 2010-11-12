@@ -3,14 +3,15 @@
 #include <time.h>
 
 
-#define MACOS
-//#define WIN32
+//#define MACOS
+#define WIN32
+
 
 //#define WIN_VS
-//Rem by Vic 
-//#define WIN_BS //BorlandStudio
+//Rem by Vic
+#define WIN_BS //BorlandStudio
 
-#define MACPRO
+//#define MACPRO
 
 #ifdef MACPRO
 //#define HASH_PATH "/Volumes/GOMDE_500Gb/_HASH/"	
