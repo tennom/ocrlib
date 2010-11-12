@@ -1,4 +1,4 @@
-//C-
+﻿//C-
 //C- This software is subject to, and may be distributed under, the
 //C- GNU General Public License, either Version 2 of the license,
 //C- or (at your option) any later version. The license should have
@@ -11,8 +11,6 @@
 //C- GNU General Public License for more details.
 //C-
 
-//новая версия 11.11.2010_3
-
 //if ( ImBuf !=NULL ) farfree(ImBuf);  // освобождение памяти
 //q=(тип_q *)farmalloc(n_byte);        // запрос памяти без очистки 0
 //q_new=farrealloc(q_old,n_byte);;     // изменение размера блока
@@ -24,7 +22,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <iostream>
-#include "../../libtiff/libtiff.h"
+#include "libtiff.h"
 
 using namespace std;
 
@@ -130,9 +128,20 @@ protected:
 
   /**\brief  Предобработка битовой картинки для функция определения угла наклона текста */
   void detectContour();
-	
+
   /**\brief  Убирает белый фон вокруг изображения */
   GBitmap* detectRegion(int frame,int *x0,int *x1,int *y0,int *y1);
+
+  /**\// автоопределение количества градаций в битмапе с управляемой инверсией.
+  Autodetect the number of gradations in the bitmap with a controlled inversion*/
+  void AutodetectGradations(int invert);
+  /**\brief  Упаковка большого битмапа в маленькй int массив. */
+  void packImg32(int invert);
+  /**\brief  Распаковка маленького битового массива int в большй битмап. */
+  void unpackImg32(int invert);
+  /**\brief  Имитация полиграфического растискивания и зашумленности */
+  void dotGain(int gRateLefts, int gRateRight,
+			   int gRateHighs, int gRateLower, int noiseRate);
 	
 	
   /**\brief   Scale GBitmap content
@@ -140,10 +149,11 @@ protected:
   void scaleFast(const GBitmap*ref, float scale);
 
   /**\brief  Вращение или (и) масштабирование битовой картинки */
-  void rotateFast(const GBitmap*ref,float scale, float rotation);
+  void rotateFast(const GBitmap*ref, float scale, float rotation);
 
-  /**\brief функция определения угла наклона текста с помощью быстрого преобразования Радона аналог GBitsetRotation.h  
-    g параметр задающий максимально возможный определяемый угол наклона текста,
+  /**\brief функция определения угла наклона текста с помощью быстрого
+	преобразования Радона аналог GBitsetRotation.h
+	g параметр задающий максимально возможный определяемый угол наклона текста,
     по умолчанию g=8, с увеличением максимадьного угола наклона текста g,
     пропорционально падает быстродействие t.
     g=8 angle<7gr, t=0.125sec; g=4 angle<14gr t=0.29sec;  g=2 angle<26gr t=0.8sec.
@@ -156,17 +166,17 @@ protected:
 
   /**\brief функция быстрого преобразования Радона */
   void toolsRadon( int sign,
-					unsigned int sharpness[],
-					unsigned int w2,
-					unsigned int g
-					);
+				   unsigned int sharpness[],
+				   unsigned int w2,
+				   unsigned int g
+				  );
 
 	
    /// Отимизация исходного массива bytes_data для определения угла наклона текста
   void optimizationSkew( unsigned int g );
 	
   /**\brief функция преобразования серого массива в битовый массив (адаптивный порог)
-	// Авторы = "DerekBradley and GerhardRoth".
+   // Авторы = "DerekBradley and GerhardRoth".
    // www.derekbradley.ca / AdaptiveThresholding / index.html. */ 
   void binarisation(int Tr, int BASE);	
 	
@@ -186,16 +196,17 @@ protected:
   int bytes_per_row;
   int grays;
 
-public:
-  unsigned char  *bytes_data;        ///<буфер байтовых данных битмэпа
-  unsigned char  *bites_data;        ///<буфер битовых данных битмэпа
-  unsigned char  *bytes_data_buf;    ///<промежуточный буфер обработки битмэпа
+public:                            ///<size(bites_data) = size(bytes_data)/8
+  unsigned char  *bytes_data;      ///<буфер байтовых данных битмэпа (большой распакованный массив)
+  unsigned char  *bites_data;      ///<буфер битовых данных битмэпа (маленький запакованный массив)
+  unsigned char  *bytes_data_buf;  ///<промежуточный буфер обработки битмэпа
   char  *TIFF_data;
   unsigned int 	 TIFF_data_size;
   string  TIFF_string;
   unsigned int 	 TIFF_string_size;	
 	
-  unsigned short pack_flag;
+  unsigned short pack_flag;   // 1 массив bites_data запакован функцией packImg
+  unsigned short pack_flag32; // 1 массив bites_data запакован функцией packImg32
   int data_size;
   unsigned short h;
   unsigned short w;

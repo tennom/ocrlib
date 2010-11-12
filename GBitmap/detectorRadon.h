@@ -1,4 +1,4 @@
-//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+﻿//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 //*****************************angle recognition********************************
 
@@ -31,7 +31,7 @@ float GBitmap::detectSkew( unsigned int g ) {
 	unsigned int w_g=w/g;      // w_8=w/8;    >>3 деление на 8  // w_8=(w+7)/8;  //***
 	unsigned int i, j;
 	
-	//Vic TIME_START  //  time=0.516  w=2698 h= 4000
+	TIME_START  //  time=0.516  w=2698 h= 4000
 	
 	// вычисление w2 как ближайшей степени двойки w, причем w2 >= w,
 	// напрямер если w=1035 то w2=2048
@@ -51,7 +51,7 @@ float GBitmap::detectSkew( unsigned int g ) {
 	toolsRadon(-1, sharpness, w2, g);
 	
 	// освобождение массива bytes_data_buf
-	//delete bytes_data_buf;
+	delete bytes_data_buf;
 	
 	// вычисляем максимум суммы квадратов разностей vmax и индекс imax,
 	// соответствующий этому максимому. Индекс определяет угл наклона текста
@@ -97,7 +97,7 @@ float GBitmap::detectSkew( unsigned int g ) {
 	 cout<<"iskew="<<iskew<<END<<"alpha="<<alpha<<END<<END;
 	 */
 	
-	//Vic TIME_PRINT
+	TIME_PRINT
 	
 	return alpha;
 	
@@ -113,7 +113,7 @@ GBitmap::toolsRadon( int sign,
 					) {
 	
 	cout<<END<<"toolsRadon(int sign, unsigned int sharpness[]), version V0"<<END;
-	//cout<<"sign="<<sign<<END;
+	cout<<"sign="<<sign<<END;
 	
 	// TIME_START  // time=0.078*2   w=2698 h= 4000
 	
@@ -250,7 +250,7 @@ GBitmap::toolsRadon( int sign,
 	} // x
 	///cout<<END<<END;
 	/**/
-	//cout<<"@w21";
+	
 	
 	// освобождение массивов p1, p2
 	delete p1;     delete p2;
@@ -283,7 +283,7 @@ GBitmap::toolsRadon( int sign,
 	 cout<<END;
 	 */
 	
-	//cout<<"w="<<w<<"  w2="<<w2<<"  h="<<h<<"  s="<<s<<END;
+	//cout<<"w="<<w<<"  w_8="<<w_8<<"  w2="<<w2<<"  h="<<h<<"  s="<<s<<END;
 	
 	/**/
 }//_____________________________________________________________________________
@@ -1197,3 +1197,82 @@ void GBitmap::optimizationSkew( unsigned int g ) {
 // unsigned char* newData = new unsigned char [new_w * new_h];
 
 //------------------------------------------------------------------------------
+
+
+
+//****************************************************************************//
+
+
+/*
+			// отлажена работает но не понадобилась //
+// Предобработка битовой картинки для функция определения угла наклона текста
+
+void GBitmap::detectContour() {
+
+// пространственный Лапласиан, убирает сплошные черные области и подчеркивает граници,
+// а ч.б. изображение превращает в контурное, с двухпиксельными контуром,
+// что благоприятно для алгоритмов определения угла наклона текста
+
+	// Вызов функции предобработка битовой картинки
+///	detectContour();
+
+	int w=ncolumns, h=nrows;      // char
+	unsigned int x, y;
+	int w_h=w*h;
+	//unsigned char *A;
+	unsigned char* A=bytes_data;
+
+cout<<END<<"detectContour(), version V0"<<END;
+
+TIME_START
+//
+	//unsigned char *p0;
+	for (x=0; x < w_h; x++){
+		//bytes_data[x]=1 - bytes_data[x]/128;
+		*(A +x )=1 - *(A +x )/128; // побитовая выборка из массива bytes_data
+		//b=1-b/128; // преобразование серого в черно белый
+	}
+//
+
+
+	//bool *p,*d,*d1,*d2,*d3,*d4,*d5;
+	char *p,*d,*d1,*d2,*d3,*d4,*d5;
+	//A=bytes_data;
+														  //      -1
+														  //       0
+														  //  -1 0 4 0 -1
+	for (int y=5; y<h-3; y++){                            //       0
+	   d =A+(y-4)*w-4;  //A[y-4][x-4]                     //      -1
+	   d1=A+y*w;        //A[y][x]
+	   d2=d1+2*w;       //A[y+2][x]
+	   d3=d1-2*w;       //A[y-2][x]
+	   d4=d1+2;         //A[y][x+2]
+	   d5=d1-2;         //A[y][x-2]
+	   for (int x=5; x<w-3; x++){
+		 //  выделение граници в 2 пиксела
+		 // A[y-4][x-4] =4*A[y][x]-A[y+2][x]-A[y-2][x]-A[y][x+2]-A[y][x-2]
+		 *(d+x)=*(d1+x)*4-*(d2+x)-*(d3+x)-*(d4+x)-*(d5+x);
+		 //*d0=255;
+///		 *(bytes_data + y*w + x)=0;
+
+//#ifdef DEBUGLVL
+//	   drawData[0][y-5][x-5]=255+*(d+x)*196;  // draw it
+//#endif
+	}}  // for x,y
+
+
+
+	for (x=0; x < w_h; x++){
+		bytes_data[x]=(1 - bytes_data[x])*255;
+		// bytes_data[x]=bytes_data[x]/128;
+		// b=*(p0 +x ); // побитовая выборка из массива bytes_data
+		// b=1-b/128;   // преобразование серого в черно белый
+	}
+
+
+TIME_PRINT
+
+// *(d+x)=*(d1+x)*2-*(d2+x)-*(d3+x); // -*(d4+x)-*(d5+x)
+//  (нормировка скана)
+}//_____________________________________________________________________________
+*/
