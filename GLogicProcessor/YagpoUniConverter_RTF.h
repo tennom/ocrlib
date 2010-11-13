@@ -1,6 +1,6 @@
 #ifdef MACOS
 void GLogicProcessor::RTFtoYagpoConverter(commandData *inputData, string &mainString, string &path){
-#define DR(x) if(print)cout<<x;
+
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 	
 	NSString *fileType;
@@ -71,7 +71,7 @@ void GLogicProcessor::RTFtoYagpoConverter(commandData *inputData, string &mainSt
 			mainString+=letter;
 			letterIndex++;continue;
 		}
-		//DR("fontName="<<str<<END);
+		//DT("fontName="<<str<<END);
 		if ( fontNameMap.find(str) != fontNameMap.end()) {
 			//DR(str <<" is tib font"<<END); 
 			//________________START_convert Tibetan font_______________							
