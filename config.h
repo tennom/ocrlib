@@ -1,3 +1,5 @@
+//2010.11.13
+
 #ifndef CONFIG_H
 #define CONFIG_H
 #include <time.h>
