@@ -1,6 +1,6 @@
 
 string GLogicProcessor::startConvert(commandData *inputData){
-	//cout<<"Start inputData->data[\"inputFolder\"]"<<inputData->data["inputFolder"]<<END;
+	cout<<"Start inputData->data[\"inputFolder\"]"<<inputData->data["inputFolder"]<<END;
 	string str,path;
 	vector<string> strVector;     
 	//sregex date = sregex::compile( "&agrave;" );
@@ -132,7 +132,7 @@ string GLogicProcessor::startConvert(commandData *inputData){
 		string mainString;
 		string path="codePages/SinhalaASCI.xml";
 		readMapXML(SinhalaASCI,path);
-		//cout<<"SinhalaASCI.size()="<<SinhalaASCI.size()<<END;
+		cout<<"SinhalaASCI.size()="<<SinhalaASCI.size()<<END;
 		
 		if(inputData->data["InputMethod"]=="fileList"){
 			cout<<"dSinhalaASCIToYagpo inputData->fileList.size()="<<inputData->fileList.size()<<END;
