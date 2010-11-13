@@ -1,4 +1,4 @@
-﻿//13 ноября 2010 года.
+﻿//13_1 ноября 2010 года.
 
 //C-
 //C- This software is subject to, and may be distributed under, the
