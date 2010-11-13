@@ -13,7 +13,7 @@
 //C- GNU General Public License for more details.
 //C-
 # include "GBitmap.h"
-# include "config.h"
+# include "config.h" 
 #include <string.h>
 #include <stdio.h>
 #include "php2stl.h"
