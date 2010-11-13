@@ -1079,17 +1079,22 @@ string GImageEditor::readInputAction(commandData *inputData){
 		destLine=logicProcessor->startConvert(inputData);
 	}
 	
-	if(inputData->data["ocrData"]=="WylieToYagpo"){  //UnicodeToYagpo converter
+	if(inputData->data["ocrData"]=="WylieToYagpo"){  //Wylie transliteration to Yagpo 
 		inputData->data["inputFile"]=inputData->fileList[0];
 		inputData->data["InputMethod"]="fileList";
 		destLine=logicProcessor->startConvert(inputData);		
 	}
-	if(inputData->data["ocrData"]=="YagpoToUnicode"){  //UnicodeToYagpo converter
+	if(inputData->data["ocrData"]=="dWylieToYagpo"){  //delimited ༼Wylie༽ transliteration converter
 		inputData->data["inputFile"]=inputData->fileList[0];
 		inputData->data["InputMethod"]="fileList";
 		destLine=logicProcessor->startConvert(inputData);		
 	}
-	if(inputData->data["ocrData"]=="dWylieToYagpo"){  //UnicodeToYagpo converter
+	if(inputData->data["ocrData"]=="dSinhalaASCIToYagpo"){  //delimited ༼Sinhala༽ transliteration converter
+		inputData->data["inputFile"]=inputData->fileList[0];
+		inputData->data["InputMethod"]="fileList";
+		destLine=logicProcessor->startConvert(inputData);		
+	}
+	if(inputData->data["ocrData"]=="YagpoToUnicode"){  //Yagpo To Unicode converter
 		inputData->data["inputFile"]=inputData->fileList[0];
 		inputData->data["InputMethod"]="fileList";
 		destLine=logicProcessor->startConvert(inputData);		
