@@ -4,16 +4,14 @@
 #define CONFIG_H
 #include <time.h>
 
-
-//#define MACOS
-#define WIN32
-
-
+//*******************выносится в среду компиляции
+//#define MACOS   
+//#define MACPRO
+//#define WIN32
 //#define WIN_VS
 //Rem by Vic
-#define WIN_BS //BorlandStudio
-
-//#define MACPRO
+//#define WIN_BS //BorlandStudio
+//************************************************
 
 #ifdef MACPRO
 //#define HASH_PATH "/Volumes/GOMDE_500Gb/_HASH/"	

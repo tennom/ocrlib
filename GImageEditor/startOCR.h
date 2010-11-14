@@ -596,7 +596,7 @@ void GImageEditor::imageProcess(commandData *inputData){
 	string strHeaderHTML,srcLine,str;
 	string  path=inputData->data["tablePath"]+"/header.xml";
 	replace(path.begin(),path.end(),'\\','/');
-	
+		
 	if(!inputData->fileList.size()){
 		readDirectoryToArray(inputData->fileList,inputData->data["inputFolder"],"img");
 	}
@@ -627,7 +627,7 @@ void GImageEditor::imageProcess(commandData *inputData){
 		i++;
 	}
 	
-		if(inputData->fileList.size()>8){
+		if(inputData->fileList.size()<8){
 			for(int j=0;j<inputData->fileList.size();j++){
 				TIME_START
 				cout<<"inputData->fileList["<<j<<"]="<<inputData->fileList[j]<<END;
@@ -812,6 +812,9 @@ void GImageEditor::imageProcess(commandData *inputData){
 
 void GImageEditor::proccessImage(commandData *inputData,GBitmap *pechaImg_){
 
+	cout<<"inputData->data[SplitPage]"<<inputData->data["SplitPage"]<<endl;
+	
+	
 	vector<stringOCR>strArray;
 	if(inputData->data["SplitPage"]=="CropBorder"){
 		

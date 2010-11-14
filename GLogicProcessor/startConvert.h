@@ -130,7 +130,7 @@ string GLogicProcessor::startConvert(commandData *inputData){
 	}
 	if(inputData->data["ocrData"]=="dSinhalaASCIToYagpo"){
 		string mainString;
-		string path="codePages/SinhalaASCI.xml";
+		string path=inputData->data["tablePath"]+"codePages/SinhalaASCI.xml";
 		readMapXML(SinhalaASCI,path);
 		cout<<"SinhalaASCI.size()="<<SinhalaASCI.size()<<END;
 		
