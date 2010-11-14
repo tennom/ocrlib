@@ -149,7 +149,7 @@ string GLogicProcessor::dSinhalaASCIToYagpo(string &inStr){
 	//string::size_type pos = 0;
 	string result;
 	string startUTF="༼";
-	string endUTF="༽";
+	string endUTF="༽"; 
 	
 	short startTibetan, endTibetan;
 	
