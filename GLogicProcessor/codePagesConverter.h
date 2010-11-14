@@ -75,6 +75,8 @@ string GLogicProcessor::dWylieToYagpoConverter(string &inStr){
 	
 }//_______________________________________________________________________________________
 
+
+
 string GLogicProcessor::UnicodeToYagpo(string &srcStr){
 	string destStr;
 	string needConvertToWylie="";
@@ -141,6 +143,19 @@ string GLogicProcessor::UnicodeToYagpo(string &srcStr){
 };
 
 
+string GLogicProcessor::singhalaToYagpo(string &uniStack){
+	//cout<<"uniStack="<<uniStack<<END;
+	string str=uniStack,strDest;
+	map<string, string>::iterator p; 
+	for(p = SinhalaASCI.begin(); p != SinhalaASCI.end(); p++) {
+		strDest= p->first;
+		str=str_replace(strDest,p->second, str);
+	}	
+	//cout<<"str="<<str<<END;
+   	return str;
+}//_______________________________________________________________________________________
+
+
 
 string GLogicProcessor::dSinhalaASCIToYagpo(string &inStr){
 	string destStr,uniStack;
@@ -165,7 +180,7 @@ string GLogicProcessor::dSinhalaASCIToYagpo(string &inStr){
 			startTibetan=0;
 			endTibetan=1;
 			matchStr=""; uniStack+=match;
-			result+=singhalaToUTF(uniStack);
+			result+=singhalaToYagpo(uniStack);
 			//cout<<"end tibetan result"<<result<<endl;
 		}
 		
