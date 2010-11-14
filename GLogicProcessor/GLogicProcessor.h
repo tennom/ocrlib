@@ -86,7 +86,7 @@ public:
 	map<string,string>ASCIToUni;    ///<map of tibetan letters in Unicode and ASCI keyboard layout
 	map<string, uniRecord>YagpoToWylieMap; ///<map of Yagpo UTF To Wylie conversion
 	map<string, uniRecord>UniToWylieMap; ///<map of Uni To Wylie conversion
-	map<string,string> SinhalaASCI;
+	map<string,string> SinhalaASCI;  //map for Sinhala font convertion function  
 	vector<uniRecord>uniTibTable0F00;
 	vector<string>TibetanAlphabet;
 	map<string,map<string,uniRecord> >fontMap;
@@ -151,10 +151,12 @@ public:
 	string dSinhalaASCIToYagpo(string &inStr);
 	/** @brief convert string from Singhala ASCI font (FMAbhaya etc.) transliteration to Sinhala UTF  (english {Singhala ASCI} english) 		   
 	 */
-	string singhalaToUTF(string &uniStack);
+	string singhalaToYagpo(string &uniStack);
 	/** @brief convert string from CXS Extended Sanskrit codepage in Uni UTF8 string
 	 this is fast conversion without copy string		   
 	 */
+     string SinhalaUniTon(string &uniStack,int mode);
+	
 	void convertCXS_to_UTF_nocopy(string &inStr);
 	/** @brief convert string from CXS Extended Sanskrit codepage in Uni UTF8 string
 	 this is save conversion with copy string		   

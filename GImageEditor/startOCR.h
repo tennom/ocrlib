@@ -1097,6 +1097,12 @@ string GImageEditor::readInputAction(commandData *inputData){
 		inputData->data["InputMethod"]="fileList";
 		destLine=logicProcessor->startConvert(inputData);		
 	}
+	if(inputData->data["ocrData"]=="SinhalaMettaToYagpo"){  //delimited ༼Sinhala༽ transliteration converter
+		inputData->data["inputFile"]=inputData->fileList[0];
+		inputData->data["InputMethod"]="fileList";
+		destLine=logicProcessor->startConvert(inputData);		
+	}
+
 	if(inputData->data["ocrData"]=="YagpoToUnicode"){  //Yagpo To Unicode converter
 		inputData->data["inputFile"]=inputData->fileList[0];
 		inputData->data["InputMethod"]="fileList";

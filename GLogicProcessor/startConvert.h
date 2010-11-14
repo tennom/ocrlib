@@ -159,6 +159,38 @@ string GLogicProcessor::startConvert(commandData *inputData){
 			cout<<mainString<<END;
 		}
 	}
+	if(inputData->data["ocrData"]=="SinhalaMettaToYagpo"){
+		string mainString;
+		string path=inputData->data["tablePath"]+"codePages/SinhalaMetta.xml";
+		readMapXML(SinhalaASCI,path);
+		cout<<"SinhalaASCI.size()="<<SinhalaASCI.size()<<END;
+		
+		if(inputData->data["InputMethod"]=="fileList"){
+			cout<<"dSinhalaASCIToYagpo inputData->fileList.size()="<<inputData->fileList.size()<<END;
+			int step=0;
+			for(int i=0;i<inputData->fileList.size();i++){
+				strVector.resize(0);
+				path=inputData->fileList[i]+"_out.txt";
+				readText(strVector, inputData->fileList[i]);
+				cout<<"strVector.size()="<<strVector.size()<<END;
+				mainString="";
+				for(int i=0;i<strVector.size();i++){
+					mainString+=singhalaToYagpo(strVector[i])+"\n";
+					if(step==1000){cout<<i<<" ";step=0;}step++;
+				}
+				writeText(mainString, path);
+			}
+		}else{
+			int step=0;
+			for(int i=0;i<inputData->fileList.size();i++){
+				mainString="";
+				mainString+=dSinhalaASCIToYagpo(inputData->fileList[i]);
+				if(step==1000){cout<<".";step=0;}step++;
+			}
+			cout<<mainString<<END;
+		}
+	}
+	
 
 	if(inputData->data["ocrData"]=="WylieToYagpo"){
 		string mainString; cout<<" inputData->data[InputMethod]="<<inputData->data["InputMethod"]<<endl;

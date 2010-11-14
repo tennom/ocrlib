@@ -85,6 +85,94 @@ string GLogicProcessor::tibetanUTFToYagpo(string &uniStack,int mode){
 	return resultStr;
 }//_______________________________________________________________________________________
 
+string GLogicProcessor::SinhalaUniTon(string &uniStack,int mode){
+	
+	const int minUniRecord=1;
+	const int maxUniRecord=27;
+	int i,matchLen;
+	string match, resultStr, str;
+	short flag, flagExistInMap;
+	//int LetterIndex=-1;
+	int print=0;
+	DT("mode= "<<mode<<" stack count="<<uniStack.size()<<" maxUniRecord"<<maxUniRecord<<" uniStack="<<uniStack<<"/ mainLetterTableUni.size()="<<mainLetterTableUni.size()<<END);
+	
+	
+	if(uniStack.size()<minUniRecord)return uniStack;
+	flagExistInMap=0;
+	if(uniStack.size()<maxUniRecord){
+		matchLen=uniStack.size();
+	}else{
+		matchLen=maxUniRecord;
+	}	
+	map<string, map<string,string> >::const_iterator it;
+	while(matchLen>=0){  //from longest match till one letter
+		DT(".1");
+		if(uniStack.size()>=matchLen){  //if stack is long enouth
+			match="";
+			for(i=0;i<=matchLen;i++){
+				match+=uniStack[i];//fill match string
+			}
+			DT("matchLen"<<matchLen<<" match=/"<<match<<"/ uniStack="<<uniStack<<"/"<<END);
+			flag=0;
+			if(mode==1){it = mainLetterTableUni.find(match);if(it != mainLetterTableUni.end())flag=1;}
+			if(mode==2){it = mainLetterTableKey.find(match);if(it != mainLetterTableKey.end())flag=1;}
+			DT(".2"<<"flag="<<flag);
+			if (flag) {
+				flag=1;
+				if(mode==1)str=mainLetterTableUni[match]["Wylie"];
+				if(mode==2)str=mainLetterTableKey[match]["Wylie"];
+				DT("str="<<str<<endl);
+				if(str=="i"){resultStr+="";flag=0;}
+				if(str=="o"){resultStr+="";flag=0;}
+				if(str=="e"){resultStr+="";flag=0;}
+				if(str=="u"){resultStr+="";flag=0;}
+				if(str=="A"){resultStr+="";flag=0;}
+				if(str=="I"){resultStr+="";flag=0;}
+				if(str=="E"){resultStr+="";flag=0;}
+				if(str=="U"){resultStr+="";flag=0;}
+				if(str=="O"){resultStr+="";flag=0;}
+				if(str=="space"){resultStr+="་";flag=0;}
+				
+				if(flag){
+					if(mode==1)resultStr+=mainLetterTableUni[match]["name"];
+					if(mode==2)resultStr+=mainLetterTableKey[match]["name"];
+				}
+				if(mode==1)DT(" match="<<match<<"mainLetterTableUni[match].[\"name\"]="<<mainLetterTableUni[match]["name"]<<" "<<mainLetterTableUni[match]["Wylie"]<<END);
+				if(mode==2)DT(" match="<<match<<"mainLetterTableKey[match].[\"name\"]="<<mainLetterTableKey[match]["name"]<<" "<<mainLetterTableKey[match]["Wylie"]<<END);
+				uniStack.erase(0,matchLen+1);
+				if(uniStack.size()==0){break;}
+				if(uniStack.size()<=maxUniRecord){
+					matchLen=uniStack.size();
+				}else{
+					matchLen=maxUniRecord;
+				}
+				
+			}else{
+				if(matchLen==0){
+					resultStr+=match;
+					DT(" one letter match=/"<<match<<"/"<<END);
+					uniStack.erase(0,matchLen+1);
+					if(uniStack.size()==0){break;}
+					if(uniStack.size()<=maxUniRecord){
+						matchLen=uniStack.size();
+					}else{
+						matchLen=maxUniRecord;
+					}
+				}	
+			}
+			DT(" matchLen="<<matchLen<<"/ resultStr=/"<<resultStr<<"/"<<END);
+			DT(".3");
+			
+		}//if(uniStackIndex
+		DT(".4");
+		matchLen--;
+    }//while(matchLen>=0)
+	
+	DT("resultStr=/"<<resultStr<<"/"<<END);
+	return resultStr;
+}//_______________________________________________________________________________________
+
+
 //deprecated
 string GLogicProcessor::UniToTibetan(string &uniStack, int YagpoWylieFontFlag){
 	
@@ -168,17 +256,6 @@ string GLogicProcessor::UniToTibetan(string &uniStack, int YagpoWylieFontFlag){
 	return txt;
 }//_______________________________________________________________________________________
 
-string GLogicProcessor::singhalaToUTF(string &uniStack){
-	//cout<<"uniStack="<<uniStack<<END;
-	string str=uniStack,strDest;
-	map<string, string>::iterator p; 
-	for(p = SinhalaASCI.begin(); p != SinhalaASCI.end(); p++) {
-		strDest= p->first;
-		str=str_replace(strDest,p->second, str);
-	}	
-	//cout<<"str="<<str<<END;
-   	return str;
-}//_______________________________________________________________________________________
 
 string GLogicProcessor::YagpoToUni(string &srcStr){
 	
