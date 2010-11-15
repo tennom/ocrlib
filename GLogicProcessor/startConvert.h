@@ -175,7 +175,7 @@ string GLogicProcessor::startConvert(commandData *inputData){
 				cout<<"strVector.size()="<<strVector.size()<<END;
 				mainString="";
 				for(int i=0;i<strVector.size();i++){
-					mainString+=singhalaToYagpo(strVector[i])+"\n";
+					mainString+=SinghalaASCIToYagpo(strVector[i])+"\n";
 					if(step==1000){cout<<i<<" ";step=0;}step++;
 				}
 				writeText(mainString, path);

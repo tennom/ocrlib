@@ -143,7 +143,7 @@ string GLogicProcessor::UnicodeToYagpo(string &srcStr){
 };
 
 
-string GLogicProcessor::singhalaToYagpo(string &uniStack){
+string GLogicProcessor::SinghalaASCIToYagpo(string &uniStack){
 	//cout<<"uniStack="<<uniStack<<END;
 	string str=uniStack,strDest;
 	map<string, string>::iterator p; 
@@ -151,8 +151,9 @@ string GLogicProcessor::singhalaToYagpo(string &uniStack){
 		strDest= p->first;
 		str=str_replace(strDest,p->second, str);
 	}	
+	
 	//cout<<"str="<<str<<END;
-   	return str;
+   	return SinhalaUniToYagpo(str,1);
 }//_______________________________________________________________________________________
 
 
@@ -180,7 +181,7 @@ string GLogicProcessor::dSinhalaASCIToYagpo(string &inStr){
 			startTibetan=0;
 			endTibetan=1;
 			matchStr=""; uniStack+=match;
-			result+=singhalaToYagpo(uniStack);
+			result+=SinhalaUniToYagpo(uniStack,1);
 			//cout<<"end tibetan result"<<result<<endl;
 		}
 		

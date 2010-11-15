@@ -85,7 +85,7 @@ string GLogicProcessor::tibetanUTFToYagpo(string &uniStack,int mode){
 	return resultStr;
 }//_______________________________________________________________________________________
 
-string GLogicProcessor::SinhalaUniTon(string &uniStack,int mode){
+string GLogicProcessor::SinhalaUniToYagpo(string &uniStack,int mode){
 	
 	const int minUniRecord=1;
 	const int maxUniRecord=27;

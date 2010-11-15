@@ -151,12 +151,13 @@ public:
 	string dSinhalaASCIToYagpo(string &inStr);
 	/** @brief convert string from Singhala ASCI font (FMAbhaya etc.) transliteration to Sinhala UTF  (english {Singhala ASCI} english) 		   
 	 */
-	string singhalaToYagpo(string &uniStack);
+	string SinghalaASCIToYagpo(string &uniStack);
+	/** @brief convert string from Singhala Unicode font to Sinhala Yagpo precomposed Unicode codepage UniToTibetanBig.xml 		   
+	 */
+     string SinhalaUniToYagpo(string &uniStack,int mode);
 	/** @brief convert string from CXS Extended Sanskrit codepage in Uni UTF8 string
 	 this is fast conversion without copy string		   
-	 */
-     string SinhalaUniTon(string &uniStack,int mode);
-	
+	 */	
 	void convertCXS_to_UTF_nocopy(string &inStr);
 	/** @brief convert string from CXS Extended Sanskrit codepage in Uni UTF8 string
 	 this is save conversion with copy string		   
