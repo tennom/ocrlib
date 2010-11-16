@@ -453,7 +453,7 @@ ostream&operator<<(ostream& s, GTextBufer z);
 	 all data store in UTF-8 format
 	 */
 	typedef struct uniLetterRecord{
-		vector<short> uniCode; //self Unicode in base Tibetan
+		map<string,string> key; //main map for store all string value
 		vector<short> uniKey;  // unicode for typing
 		vector<short> uniYagpo;  // unicode Yagpo
 		vector<string> uniHexCode; //self Unicode in Hex in base Tibetan

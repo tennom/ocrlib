@@ -185,7 +185,7 @@ public:
 	string YagpoToUni(string &uniStack);
 	string YagpoUniToTibetanBig(string &uniStack);
 	void  LoadYagpoToWylieMap(commandData *inputData);
-	void LoadASCIToUniMap(commandData *inputData);
+
 	
 	//}	
 /// @nameDictionary function
