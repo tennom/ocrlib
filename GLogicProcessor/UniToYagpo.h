@@ -25,11 +25,13 @@ string GLogicProcessor::tibetanUTFToYagpo(string &uniStack,int mode){
 			for(i=0;i<=matchLen;i++){
 				match+=uniStack[i];//fill match string
 			}
-			DT("matchLen"<<matchLen<<" match=/"<<match<<"/ uniStack="<<uniStack<<"/"<<END);
+			DT("matchLen"<<matchLen<<" match=/"<<match<<"/ uniStack="<<uniStack<<"/"<<END); 
 			flag=0;
 			if(mode==1){it = mainLetterTableUni.find(match);if(it != mainLetterTableUni.end())flag=1;}
 			if(mode==2){it = mainLetterTableKey.find(match);if(it != mainLetterTableKey.end())flag=1;}
-			DT(".2"<<"flag="<<flag);
+
+			DT(".2"<<"flag="<<flag); 			
+			
 			if (flag) {
 				flag=1;
 				if(mode==1)str=mainLetterTableUni[match]["Wylie"];
@@ -108,57 +110,46 @@ string GLogicProcessor::SinhalaUniToYagpo(string &uniStack,int mode){
 	while(matchLen>=0){  //from longest match till one letter
 		DT(".1");
 		if(uniStack.size()>=matchLen){  //if stack is long enouth
-			match="";
-			for(i=0;i<=matchLen;i++){
-				match+=uniStack[i];//fill match string
-			}
-			DT("matchLen"<<matchLen<<" match=/"<<match<<"/ uniStack="<<uniStack<<"/"<<END);
+			match=uniStack.substr(0,matchLen+1);//fill match string
+			DT("matchLen"<<matchLen<<" match=/"<<match<<"/ uniStack="<<uniStack<<"/ size="<<uniStack.size()<<END);   //sleep(1);
 			flag=0;
 			if(mode==1){it = mainLetterTableUni.find(match);if(it != mainLetterTableUni.end())flag=1;}
 			if(mode==2){it = mainLetterTableKey.find(match);if(it != mainLetterTableKey.end())flag=1;}
 			DT(".2"<<"flag="<<flag);
-			if (flag) {
-				flag=1;
-				if(mode==1)str=mainLetterTableUni[match]["Wylie"];
-				if(mode==2)str=mainLetterTableKey[match]["Wylie"];
-				DT("str="<<str<<endl);
-				if(str=="i"){resultStr+="";flag=0;}
-				if(str=="o"){resultStr+="";flag=0;}
-				if(str=="e"){resultStr+="";flag=0;}
-				if(str=="u"){resultStr+="";flag=0;}
-				if(str=="A"){resultStr+="";flag=0;}
-				if(str=="I"){resultStr+="";flag=0;}
-				if(str=="E"){resultStr+="";flag=0;}
-				if(str=="U"){resultStr+="";flag=0;}
-				if(str=="O"){resultStr+="";flag=0;}
-				if(str=="space"){resultStr+="་";flag=0;}
-				
-				if(flag){
-					if(mode==1)resultStr+=mainLetterTableUni[match]["name"];
-					if(mode==2)resultStr+=mainLetterTableKey[match]["name"];
+			if (flag) { 
+				if(mode==1)resultStr+=mainLetterTableUni[match]["name"];
+				if(mode==2)resultStr+=mainLetterTableKey[match]["name"];
+				//if(mode==1)DT(" match="<<match<<"mainLetterTableUni[match].[\"name\"]="<<mainLetterTableUni[match]["name"]<<END);
+				//if(mode==2)DT(" match="<<match<<"mainLetterTableKey[match].[\"name\"]="<<mainLetterTableKey[match]["name"]<<END);
+				//cout<<"start erase matchLen="<<matchLen+1<<" uniStack.size()="<<uniStack.size()<<endl; 
+				if(matchLen+1<uniStack.size()){
+					uniStack=uniStack.substr(matchLen+1);
+				}else { //cout<<" break ";
+					break;
 				}
-				if(mode==1)DT(" match="<<match<<"mainLetterTableUni[match].[\"name\"]="<<mainLetterTableUni[match]["name"]<<" "<<mainLetterTableUni[match]["Wylie"]<<END);
-				if(mode==2)DT(" match="<<match<<"mainLetterTableKey[match].[\"name\"]="<<mainLetterTableKey[match]["name"]<<" "<<mainLetterTableKey[match]["Wylie"]<<END);
-				uniStack.erase(0,matchLen+1);
-				if(uniStack.size()==0){break;}
 				if(uniStack.size()<=maxUniRecord){
 					matchLen=uniStack.size();
 				}else{
 					matchLen=maxUniRecord;
 				}
+				DT(".20"<<"flag="<<flag);  
 				
-			}else{
+			}else{   //cout<<" NO FOUND matchLen="<<matchLen;
 				if(matchLen==0){
 					resultStr+=match;
 					DT(" one letter match=/"<<match<<"/"<<END);
-					uniStack.erase(0,matchLen+1);
-					if(uniStack.size()==0){break;}
+					if(matchLen+1<uniStack.size()){
+						uniStack=uniStack.substr(matchLen+1);
+					}else {
+						break;
+					}
 					if(uniStack.size()<=maxUniRecord){
 						matchLen=uniStack.size();
 					}else{
 						matchLen=maxUniRecord;
 					}
 				}	
+				DT(" _21"<<"flag="<<flag);   
 			}
 			DT(" matchLen="<<matchLen<<"/ resultStr=/"<<resultStr<<"/"<<END);
 			DT(".3");
@@ -168,7 +159,7 @@ string GLogicProcessor::SinhalaUniToYagpo(string &uniStack,int mode){
 		matchLen--;
     }//while(matchLen>=0)
 	
-	DT("resultStr=/"<<resultStr<<"/"<<END);
+	DT("resultStr=/"<<resultStr<<"/"<<END); //sleep(1);
 	return resultStr;
 }//_______________________________________________________________________________________
 

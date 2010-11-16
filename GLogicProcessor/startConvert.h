@@ -89,7 +89,6 @@ string GLogicProcessor::startConvert(commandData *inputData){
 	}
 	if(inputData->data["ocrData"]=="RTFToYagpo"){
 		ofstream c_out; c_out.open("/_out.txt");
-		LoadASCIToUniMap(inputData);
 		cout<<"RTFToYagpo inputData->fileList.size()="<<inputData->fileList.size()<<END;
 		string mainString;
 		for(int i=0;i<inputData->fileList.size();i++){
@@ -167,28 +166,31 @@ string GLogicProcessor::startConvert(commandData *inputData){
 		
 		if(inputData->data["InputMethod"]=="fileList"){
 			cout<<"dSinhalaASCIToYagpo inputData->fileList.size()="<<inputData->fileList.size()<<END;
-			int step=0;
+			
 			for(int i=0;i<inputData->fileList.size();i++){
 				strVector.resize(0);
 				path=inputData->fileList[i]+"_out.txt";
 				readText(strVector, inputData->fileList[i]);
 				cout<<"strVector.size()="<<strVector.size()<<END;
-				mainString="";
-				for(int i=0;i<strVector.size();i++){
-					mainString+=SinghalaASCIToYagpo(strVector[i])+"\n";
+				mainString=""; int step=0;
+				for(int i=0;i<strVector.size();i++){  //cout <<"next string "<<i<<" ="<<strVector[i]<<endl;
+					if(strVector[i].size()){
+					   mainString+=SinghalaASCIToYagpo(strVector[i])+"\n";
+					}else{mainString+="\n";}	
 					if(step==1000){cout<<i<<" ";step=0;}step++;
 				}
 				writeText(mainString, path);
 			}
-		}else{
+		}else{   
 			int step=0;
 			for(int i=0;i<inputData->fileList.size();i++){
-				mainString="";
+  				mainString="";
 				mainString+=dSinhalaASCIToYagpo(inputData->fileList[i]);
 				if(step==1000){cout<<".";step=0;}step++;
 			}
 			cout<<mainString<<END;
 		}
+		cout<<"DONE CONVERT";
 	}
 	
 

@@ -144,16 +144,19 @@ string GLogicProcessor::UnicodeToYagpo(string &srcStr){
 
 
 string GLogicProcessor::SinghalaASCIToYagpo(string &uniStack){
-	//cout<<"uniStack="<<uniStack<<END;
-	string str=uniStack,strDest;
+	///cout<<"uniStack="<<uniStack.size()<<END; 
+	string str=uniStack,strSrc,strDest;
 	map<string, string>::iterator p; 
-	for(p = SinhalaASCI.begin(); p != SinhalaASCI.end(); p++) {
-		strDest= p->first;
-		str=str_replace(strDest,p->second, str);
+	if(SinhalaASCI.size()){
+		for(p = SinhalaASCI.begin(); p != SinhalaASCI.end(); p++) {
+			strSrc=p->first;
+			strDest= p->second;  
+			str=str_replace(strSrc,strDest, str);
+            //cout<<"strSrc="<<strSrc<<" strDest="<<strDest<<" str="<<str<<endl;
+		}
 	}	
-	
-	//cout<<"str="<<str<<END;
-   	return SinhalaUniToYagpo(str,1);
+   	///cout<<"str="<<str<<END;  
+	return SinhalaUniToYagpo(str,1);;
 }//_______________________________________________________________________________________
 
 
